@@ -20,7 +20,8 @@ import static android.os.Build.VERSION_CODES.M;
 /**
  * @author by zeyad on 19/05/16.
  */
-public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<GenericRecyclerViewAdapter.ViewHolder> {
+public abstract class GenericRecyclerViewAdapter
+        extends RecyclerView.Adapter<GenericRecyclerViewAdapter.ViewHolder> {
 
     private static final String UNUSED = "unused", SELECTION_DISABLED = "Selection mode is disabled!";
     public final LayoutInflater mLayoutInflater;
@@ -47,12 +48,9 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
     public abstract ViewHolder onCreateViewHolder(ViewGroup parent, int viewType);
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         final ItemInfo itemInfo = mDataList.get(position);
-        holder.bindData(
-                itemInfo.getData(),
-                mSelectedItems.get(position, false),
-                position,
+        holder.bindData(itemInfo.getData(), mSelectedItems.get(position, false), position,
                 itemInfo.isEnabled());
         if (areItemsClickable &&
                 !(hasHeader() && position == 0 || hasFooter() && position == mDataList.size() - 1)) {
@@ -81,7 +79,7 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    expandedPosition = isExpanded ? -1 : position;
+                    expandedPosition = isExpanded ? -1 : holder.getAdapterPosition();
                     notifyDataSetChanged();
                 }
             });
@@ -125,7 +123,7 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         ArrayList<Long> integers = new ArrayList<>();
         for (int i = 0; i < mDataList.size(); i++) {
             try {
-                if (getSelectedItems().contains(i)) {
+                if (getSelectedItemsIndices().contains(i)) {
                     integers.add(mDataList.get(i).getId());
                 }
             } catch (Exception e) {
@@ -465,7 +463,7 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
     @SuppressWarnings(UNUSED)
     public boolean isSelected(int position) throws IllegalStateException {
         if (allowSelection) {
-            return getSelectedItems().contains(position);
+            return getSelectedItemsIndices().contains(position);
         } else {
             throw new IllegalStateException(SELECTION_DISABLED);
         }
@@ -528,7 +526,7 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
      */
     public void clearSelection() throws IllegalStateException {
         if (allowSelection) {
-            List<Integer> selection = getSelectedItems();
+            List<Integer> selection = getSelectedItemsIndices();
             mSelectedItems.clear();
             for (Integer i : selection) {
                 notifyItemChanged(i);
@@ -554,14 +552,26 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
     /**
      * Indicates the list of selected items
      *
-     * @return List of selected items ids
+     * @return List of selected items
      */
     @SuppressWarnings(UNUSED)
-    public List<Integer> getSelectedItems() throws IllegalStateException {
+    public List<Integer> getSelectedItemsIndices() throws IllegalStateException {
         if (allowSelection) {
             List<Integer> items = new ArrayList<>(mSelectedItems.size());
             for (int i = 0; i < mSelectedItems.size(); ++i) {
                 items.add(mSelectedItems.keyAt(i));
+            }
+            return items;
+        } else {
+            throw new IllegalStateException(SELECTION_DISABLED);
+        }
+    }
+
+    public List<ItemInfo> getSelectedItems() throws IllegalStateException {
+        if (allowSelection) {
+            List<ItemInfo> items = new ArrayList<>(mSelectedItems.size());
+            for (int i = 0; i < mSelectedItems.size(); ++i) {
+                items.add(mDataList.get(mSelectedItems.keyAt(i)));
             }
             return items;
         } else {
@@ -575,7 +585,7 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         Collections.sort(positions, new Comparator<Integer>() {
             @Override
             public int compare(Integer lhs, Integer rhs) {
-                return rhs - lhs;
+                return lhs - rhs;
             }
         });
         // Split the list in ranges
@@ -728,3 +738,4 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         public abstract void expand(boolean isExpanded);
     }
 }
+
