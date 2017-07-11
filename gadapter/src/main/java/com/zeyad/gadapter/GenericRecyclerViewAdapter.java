@@ -21,7 +21,7 @@ import static android.os.Build.VERSION_CODES.M;
  * @author by zeyad on 19/05/16.
  */
 public abstract class GenericRecyclerViewAdapter
-        extends RecyclerView.Adapter<GenericRecyclerViewAdapter.ViewHolder> {
+        extends RecyclerView.Adapter<GenericRecyclerViewAdapter.ViewHolder> implements ItemTouchHelperAdapter {
 
     private static final String UNUSED = "unused", SELECTION_DISABLED = "Selection mode is disabled!";
     public final LayoutInflater mLayoutInflater;
@@ -104,6 +104,22 @@ public abstract class GenericRecyclerViewAdapter
         return mDataList.get(position).getId();
     }
 
+    @Override
+    public int getItemCount() {
+        return mDataList != null ? mDataList.size() : 0;
+    }
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        moveItem(fromPosition, toPosition);
+        return false;
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        removeItem(position);
+    }
+
     @SuppressWarnings(UNUSED)
     public ItemInfo getItem(int index) {
         return mDataList.get(index);
@@ -131,11 +147,6 @@ public abstract class GenericRecyclerViewAdapter
             }
         }
         return integers;
-    }
-
-    @Override
-    public int getItemCount() {
-        return mDataList != null ? mDataList.size() : 0;
     }
 
     @SuppressWarnings(UNUSED)
@@ -335,14 +346,14 @@ public abstract class GenericRecyclerViewAdapter
     public void appendList(List<ItemInfo> dataSet) {
         validateList(dataSet);
         mDataList.addAll(dataSet);
-        notifyDataSetChanged();
+        notifyItemRangeInserted(getItemCount(), mDataList.size());
     }
 
     @SuppressWarnings(UNUSED)
     public void appendList(int position, List<ItemInfo> dataSet) {
         validateList(dataSet);
         mDataList.addAll(position, dataSet);
-        notifyDataSetChanged();
+        notifyItemRangeInserted(position, mDataList.size());
     }
 
     @SuppressWarnings(UNUSED)
@@ -664,9 +675,10 @@ public abstract class GenericRecyclerViewAdapter
     //-----------------animations--------------------------//
 
     public ItemInfo removeItem(int position) {
+        ItemInfo itemInfo = mDataList.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, mDataList.size());
-        return mDataList.remove(position);
+        //        notifyItemRangeChanged(position, mDataList.size());
+        return itemInfo;
     }
 
     public void addItem(int position, ItemInfo model) {
@@ -680,7 +692,7 @@ public abstract class GenericRecyclerViewAdapter
     }
 
     public void moveItem(int fromPosition, int toPosition) {
-        mDataList.add(toPosition, mDataList.remove(fromPosition));
+        Collections.swap(mDataList, fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
     }
 
