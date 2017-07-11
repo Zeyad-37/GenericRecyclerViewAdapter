@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.zeyad.gadapter.fastscroll.SectionTitleProvider;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,7 +23,8 @@ import static android.os.Build.VERSION_CODES.M;
  * @author by zeyad on 19/05/16.
  */
 public abstract class GenericRecyclerViewAdapter
-        extends RecyclerView.Adapter<GenericRecyclerViewAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+        extends RecyclerView.Adapter<GenericRecyclerViewAdapter.ViewHolder>
+        implements ItemTouchHelperAdapter, SectionTitleProvider {
 
     private static final String UNUSED = "unused", SELECTION_DISABLED = "Selection mode is disabled!";
     public final LayoutInflater mLayoutInflater;
