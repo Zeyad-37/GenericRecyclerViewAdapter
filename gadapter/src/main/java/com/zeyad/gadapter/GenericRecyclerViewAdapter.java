@@ -29,6 +29,7 @@ public abstract class GenericRecyclerViewAdapter
     private List<ItemInfo> mDataList;
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
+    private OnSwipeListener mOnSwipeListener;
     private boolean mIsLoadingFooterAdded,
             mHasHeader,
             mHasFooter,
@@ -117,6 +118,8 @@ public abstract class GenericRecyclerViewAdapter
 
     @Override
     public void onItemDismiss(int position) {
+        if (mOnSwipeListener != null)
+            mOnSwipeListener.onItemSwipe(position, getItemId(position));
         removeItem(position);
     }
 
@@ -160,6 +163,10 @@ public abstract class GenericRecyclerViewAdapter
 
     public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
         mOnItemLongClickListener = onItemLongClickListener;
+    }
+
+    public void setOnItemSwipeListener(OnSwipeListener onSwipeListener) {
+        mOnSwipeListener = onSwipeListener;
     }
 
     @SuppressWarnings(UNUSED)
@@ -736,6 +743,17 @@ public abstract class GenericRecyclerViewAdapter
     public interface OnItemLongClickListener {
         boolean onItemLongClicked(
                 int position, ItemInfo itemInfo, GenericRecyclerViewAdapter.ViewHolder holder);
+    }
+
+    public interface OnSwipeListener {
+
+        /**
+         * Called when a view is requested a swipe.
+         *
+         * @param position The position of the view to swipe.
+         * @param id       The id of the view to swipe.
+         */
+        void onItemSwipe(int position, long id);
     }
 
     public abstract static class ViewHolder extends RecyclerView.ViewHolder {
