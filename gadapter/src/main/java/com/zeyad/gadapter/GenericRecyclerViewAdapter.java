@@ -119,7 +119,7 @@ public abstract class GenericRecyclerViewAdapter
     @Override
     public void onItemDismiss(int position) {
         if (mOnSwipeListener != null)
-            mOnSwipeListener.onItemSwipe(position, getItemId(position));
+            mOnSwipeListener.onItemSwipe(getItem(position));
         removeItem(position);
     }
 
@@ -750,10 +750,9 @@ public abstract class GenericRecyclerViewAdapter
         /**
          * Called when a view is requested a swipe.
          *
-         * @param position The position of the view to swipe.
-         * @param id       The id of the view to swipe.
+         * @param itemInfo The {@link ItemInfo} of the view to swipe.
          */
-        void onItemSwipe(int position, long id);
+        void onItemSwipe(ItemInfo itemInfo);
     }
 
     public abstract static class ViewHolder extends RecyclerView.ViewHolder {
