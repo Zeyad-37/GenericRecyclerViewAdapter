@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.zeyad.gadapter.fastscroll.SectionTitleProvider;
+import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +25,7 @@ import static android.os.Build.VERSION_CODES.M;
  */
 public abstract class GenericRecyclerViewAdapter
         extends RecyclerView.Adapter<GenericRecyclerViewAdapter.ViewHolder>
-        implements ItemTouchHelperAdapter, SectionTitleProvider {
+        implements ItemTouchHelperAdapter, SectionTitleProvider, StickyHeaderHandler {
 
     private static final String UNUSED = "unused", SELECTION_DISABLED = "Selection mode is disabled!";
     public final LayoutInflater mLayoutInflater;
@@ -124,6 +125,11 @@ public abstract class GenericRecyclerViewAdapter
         if (mOnSwipeListener != null)
             mOnSwipeListener.onItemSwipe(getItem(position));
         removeItem(position);
+    }
+
+    @Override
+    public List<?> getAdapterData() {
+        return mDataList;
     }
 
     @SuppressWarnings(UNUSED)

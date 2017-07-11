@@ -14,10 +14,10 @@ A General Purpose adapter, equipped with all kinds of functions and animations.
 
 5- A lot of helper functions
 
+6- Scroll indicators
+
+7- Sticky Headers
+
 # Project Plan
 
-1- Scroll indicators
-
-2- Sticky Headers
-
-3- Rx event support (Click, Long Click & Swipe)
+1- Rx event support (Click, Long Click & Swipe)
