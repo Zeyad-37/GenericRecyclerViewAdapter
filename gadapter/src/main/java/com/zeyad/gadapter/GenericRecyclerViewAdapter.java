@@ -19,13 +19,14 @@ import java.util.List;
 import java.util.Set;
 
 import static android.os.Build.VERSION_CODES.M;
+import static com.zeyad.gadapter.ItemInfo.SECTION_HEADER;
 
 /**
  * @author by zeyad on 19/05/16.
  */
 public abstract class GenericRecyclerViewAdapter
         extends RecyclerView.Adapter<GenericRecyclerViewAdapter.ViewHolder>
-        implements ItemTouchHelperAdapter, SectionTitleProvider, StickyHeaderHandler {
+        implements ItemTouchHelperAdapter, StickyHeaderHandler {
 
     private static final String UNUSED = "unused", SELECTION_DISABLED = "Selection mode is disabled!";
     public final LayoutInflater mLayoutInflater;
@@ -34,6 +35,7 @@ public abstract class GenericRecyclerViewAdapter
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
     private OnSwipeListener mOnSwipeListener;
+    private SectionTitleProvider mSectionTitleProvider;
     private boolean mIsLoadingFooterAdded,
             mHasHeader,
             mHasFooter,
@@ -77,9 +79,9 @@ public abstract class GenericRecyclerViewAdapter
                 });
             }
         }
-        if (areItemsExpandable) {
+        if (areItemsExpandable && holder instanceof OnExpandListener) {
             final boolean isExpanded = position == expandedPosition;
-            holder.expand(isExpanded);
+            ((OnExpandListener) holder).expand(isExpanded);
             holder.itemView.setActivated(true);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -128,8 +130,16 @@ public abstract class GenericRecyclerViewAdapter
     }
 
     @Override
-    public List<?> getAdapterData() {
+    public List<ItemInfo> getAdapterData() {
         return mDataList;
+    }
+
+    public SectionTitleProvider getSectionTitleProvider() {
+        return mSectionTitleProvider;
+    }
+
+    public void setSectionTitleProvider(SectionTitleProvider mSectionTitleProvider) {
+        this.mSectionTitleProvider = mSectionTitleProvider;
     }
 
     @SuppressWarnings(UNUSED)
@@ -330,7 +340,6 @@ public abstract class GenericRecyclerViewAdapter
         notifyDataSetChanged();
     }
 
-    // FIXME: 17/06/16 double check!
     @SuppressWarnings(UNUSED)
     public void appendWithoutDuplicateIds(List<ItemInfo> itemInfoList) {
         validateList(itemInfoList);
@@ -344,18 +353,15 @@ public abstract class GenericRecyclerViewAdapter
             itemInfoList.clear();
             itemInfoList.addAll(set);
         }
-        mDataList.addAll(itemInfoList);
-        ArrayList<Long> finalList = new ArrayList<>();
         ItemInfo item;
-        for (int i = 0; i < mDataList.size(); i++) {
+        for (int i = 0, size = itemInfoList.size(); i < size; i++) {
             item = mDataList.get(i);
-            if (finalList.contains(item.getId())) {
-                mDataList.remove(item);
+            if (mDataList.contains(item)) {
+                replaceItem(i, item);
             } else {
-                finalList.add(item.getId());
+                addItem(i, item);
             }
         }
-        notifyDataSetChanged();
     }
 
     @SuppressWarnings(UNUSED)
@@ -374,53 +380,37 @@ public abstract class GenericRecyclerViewAdapter
 
     @SuppressWarnings(UNUSED)
     public boolean isSectionHeader(int index) {
-        return mDataList.get(index).getId() == ItemInfo.SECTION_HEADER;
-    }
-
-    @SuppressWarnings(UNUSED)
-    public boolean isCardSectionHeader(int index) {
-        return mDataList.get(index).getId() == ItemInfo.CARD_SECTION_HEADER;
+        return mDataList.get(index).getId() == SECTION_HEADER || mDataList.get(index).getLayoutId() == SECTION_HEADER;
     }
 
     @SuppressWarnings(UNUSED)
     public boolean isFooter(int index) {
-        return mDataList.get(index).getId() == ItemInfo.FOOTER;
+        return mDataList.get(index).getId() == ItemInfo.FOOTER || mDataList.get(index).getLayoutId() == ItemInfo.FOOTER;
     }
 
     @SuppressWarnings(UNUSED)
     public boolean isHeader(int index) {
-        return mDataList.get(index).getId() == ItemInfo.HEADER;
+        return mDataList.get(index).getId() == ItemInfo.HEADER || mDataList.get(index).getLayoutId() == ItemInfo.HEADER;
     }
 
     @SuppressWarnings(UNUSED)
     public boolean isLoading(int index) {
-        return mDataList.get(index).getId() == ItemInfo.LOADING;
+        return mDataList.get(index).getId() == ItemInfo.LOADING || mDataList.get(index).getLayoutId() == ItemInfo.LOADING;
     }
 
     @SuppressWarnings(UNUSED)
     public void addSectionHeader(int index, String title) {
-        addItem(index, new ItemInfo(title, ItemInfo.SECTION_HEADER).setId(ItemInfo.SECTION_HEADER));
-    }
-
-    @SuppressWarnings(UNUSED)
-    public void addCardSectionHeader(int index, String title) {
-        addItem(index, new ItemInfo(title, ItemInfo.CARD_SECTION_HEADER)
-                .setId(ItemInfo.CARD_SECTION_HEADER));
+        addItem(index, new ItemInfo(title, SECTION_HEADER).setId(SECTION_HEADER));
     }
 
     @SuppressWarnings(UNUSED)
     public void addSectionHeaderWithId(int index, String title, long id) {
-        addItem(index, new ItemInfo(title, ItemInfo.SECTION_HEADER).setId(id));
-    }
-
-    @SuppressWarnings(UNUSED)
-    public void addCardSectionHeaderWithId(int index, String title, long id) {
-        addItem(index, new ItemInfo(title, ItemInfo.CARD_SECTION_HEADER).setId(id));
+        addItem(index, new ItemInfo(title, SECTION_HEADER).setId(id));
     }
 
     @SuppressWarnings(UNUSED)
     public void removeSectionHeader(int index) throws IllegalAccessException {
-        if (mDataList.get(index).getData() instanceof String) {
+        if (mDataList.get(index).getLayoutId() == SECTION_HEADER) {
             removeItem(index);
         } else {
             throw new IllegalAccessException("item at given index is not a section header!");
@@ -443,8 +433,7 @@ public abstract class GenericRecyclerViewAdapter
         ItemInfo item;
         for (int i = 0; i < pureSet.size(); i++) {
             item = pureSet.get(i);
-            if (item.getId() == ItemInfo.SECTION_HEADER
-                    || item.getId() == ItemInfo.CARD_SECTION_HEADER
+            if (item.getId() == SECTION_HEADER
                     || item.getId() == ItemInfo.FOOTER
                     || item.getId() == ItemInfo.HEADER
                     || item.getId() == ItemInfo.LOADING) {
@@ -672,7 +661,7 @@ public abstract class GenericRecyclerViewAdapter
     public void removeItemById(Long id) {
         for (ItemInfo item : mDataList) {
             if (item.getId() == id) {
-                mDataList.remove(item);
+                removeItem(mDataList.indexOf(item));
             }
         }
     }
@@ -693,8 +682,12 @@ public abstract class GenericRecyclerViewAdapter
     public ItemInfo removeItem(int position) {
         ItemInfo itemInfo = mDataList.remove(position);
         notifyItemRemoved(position);
-        //        notifyItemRangeChanged(position, mDataList.size());
         return itemInfo;
+    }
+
+    public void replaceItem(int position, ItemInfo itemInfo) {
+        mDataList.set(position, itemInfo);
+        notifyItemChanged(position, itemInfo);
     }
 
     public void addItem(int position, ItemInfo model) {
@@ -764,6 +757,16 @@ public abstract class GenericRecyclerViewAdapter
         void onItemSwipe(ItemInfo itemInfo);
     }
 
+    public interface OnExpandListener {
+
+        /**
+         * Called when a view is requested an expand.
+         *
+         * @param isExpanded a boolean to indicate whether to expand or collapse.
+         */
+        void expand(boolean isExpanded);
+    }
+
     public abstract static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ViewHolder(View itemView) {
@@ -772,8 +775,5 @@ public abstract class GenericRecyclerViewAdapter
 
         public abstract void bindData(
                 Object data, boolean itemSelected, int position, boolean isEnabled);
-
-        public abstract void expand(boolean isExpanded);
     }
 }
-

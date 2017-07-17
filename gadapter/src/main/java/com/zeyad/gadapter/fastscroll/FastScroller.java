@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.zeyad.gadapter.GenericRecyclerViewAdapter;
 import com.zeyad.gadapter.R;
 import com.zeyad.gadapter.fastscroll.viewprovider.DefaultScrollerViewProvider;
 import com.zeyad.gadapter.fastscroll.viewprovider.ScrollerViewProvider;
@@ -72,8 +73,9 @@ public class FastScroller extends LinearLayout {
      */
     public void setRecyclerView(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
-        if (recyclerView.getAdapter() instanceof SectionTitleProvider)
-            titleProvider = (SectionTitleProvider) recyclerView.getAdapter();
+        RecyclerView.Adapter adapter = recyclerView.getAdapter();
+        if (adapter instanceof GenericRecyclerViewAdapter)
+            titleProvider = ((GenericRecyclerViewAdapter) adapter).getSectionTitleProvider();
         recyclerView.addOnScrollListener(scrollListener);
         invalidateVisibility();
         recyclerView.setOnHierarchyChangeListener(new OnHierarchyChangeListener() {
@@ -236,13 +238,15 @@ public class FastScroller extends LinearLayout {
     }
 
     private void setRecyclerViewPosition(float relativePos) {
-        if (recyclerView == null)
+        if (recyclerView == null) {
             return;
+        }
         int itemCount = recyclerView.getAdapter().getItemCount();
         int targetPos = (int) Utils.getValueInRange(0, itemCount - 1, (int) (relativePos * (float) itemCount));
         recyclerView.scrollToPosition(targetPos);
-        if (titleProvider != null && bubbleTextView != null)
+        if (titleProvider != null && bubbleTextView != null) {
             bubbleTextView.setText(titleProvider.getSectionTitle(targetPos));
+        }
     }
 
     void setScrollerPosition(float relativePos) {

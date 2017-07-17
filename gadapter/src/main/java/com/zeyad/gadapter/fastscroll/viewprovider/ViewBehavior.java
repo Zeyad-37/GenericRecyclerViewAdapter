@@ -6,7 +6,7 @@ package com.zeyad.gadapter.fastscroll.viewprovider;
  * fastScroller elements (handle and bubble) and react accordingly. See {@link DefaultBubbleBehavior}
  * for an example.
  */
-interface ViewBehavior {
+public interface ViewBehavior {
     void onHandleGrabbed();
 
     void onHandleReleased();

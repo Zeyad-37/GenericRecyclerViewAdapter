@@ -6,7 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.zeyad.gadapter.stickyheaders.exposed.StickyHeader;
+import com.zeyad.gadapter.ItemInfo;
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler;
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderListener;
 
@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.zeyad.gadapter.ItemInfo.SECTION_HEADER;
 
 public class StickyLayoutManager extends LinearLayoutManager {
 
@@ -102,14 +104,13 @@ public class StickyLayoutManager extends LinearLayoutManager {
 
     private void cacheHeaderPositions() {
         headerPositions.clear();
-        List<?> adapterData = headerHandler.getAdapterData();
+        List<ItemInfo> adapterData = headerHandler.getAdapterData();
         if (adapterData == null) {
             positioner.setHeaderPositions(headerPositions);
             return;
         }
-
         for (int i = 0; i < adapterData.size(); i++) {
-            if (adapterData.get(i) instanceof StickyHeader) {
+            if (adapterData.get(i).getId() == SECTION_HEADER || adapterData.get(i).getLayoutId() == SECTION_HEADER) {
                 headerPositions.add(i);
             }
         }
