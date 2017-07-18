@@ -767,13 +767,13 @@ public abstract class GenericRecyclerViewAdapter
         void expand(boolean isExpanded);
     }
 
-    public abstract static class ViewHolder extends RecyclerView.ViewHolder {
+    public abstract static class ViewHolder<T> extends RecyclerView.ViewHolder {
 
         public ViewHolder(View itemView) {
             super(itemView);
         }
 
-        public abstract <T> void bindData(
+        public abstract void bindData(
                 T data, boolean itemSelected, int position, boolean isEnabled);
     }
 }
