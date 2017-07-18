@@ -773,7 +773,7 @@ public abstract class GenericRecyclerViewAdapter
             super(itemView);
         }
 
-        public abstract void bindData(
-                Object data, boolean itemSelected, int position, boolean isEnabled);
+        public abstract <T> void bindData(
+                T data, boolean itemSelected, int position, boolean isEnabled);
     }
 }
