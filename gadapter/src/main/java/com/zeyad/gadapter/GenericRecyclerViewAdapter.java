@@ -2,7 +2,6 @@ package com.zeyad.gadapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.ArraySet;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import static android.os.Build.VERSION_CODES.M;
+import static android.support.v7.widget.RecyclerView.NO_POSITION;
 import static com.zeyad.gadapter.ItemInfo.SECTION_HEADER;
 
 /**
@@ -28,7 +28,7 @@ public abstract class GenericRecyclerViewAdapter
         extends RecyclerView.Adapter<GenericRecyclerViewAdapter.ViewHolder>
         implements ItemTouchHelperAdapter, StickyHeaderHandler {
 
-    private static final String UNUSED = "unused", SELECTION_DISABLED = "Selection mode is disabled!";
+    private static final String SELECTION_DISABLED = "Selection mode is disabled!";
     public final LayoutInflater mLayoutInflater;
     private final SparseBooleanArray mSelectedItems;
     private List<ItemInfo> mDataList;
@@ -42,13 +42,14 @@ public abstract class GenericRecyclerViewAdapter
             allowSelection,
             areItemsExpandable,
             areItemsClickable = true;
-    private int expandedPosition = -1;
+    private Set<Integer> expandedPosition;
 
     public GenericRecyclerViewAdapter(LayoutInflater layoutInflater, List<ItemInfo> list) {
         validateList(list);
         mLayoutInflater = layoutInflater;
         mDataList = list;
         mSelectedItems = new SparseBooleanArray();
+        expandedPosition = new HashSet<>();
     }
 
     @Override
@@ -59,13 +60,15 @@ public abstract class GenericRecyclerViewAdapter
         final ItemInfo itemInfo = mDataList.get(position);
         holder.bindData(itemInfo.getData(), mSelectedItems.get(position, false), position,
                 itemInfo.isEnabled());
-        if (areItemsClickable &&
-                !(hasHeader() && position == 0 || hasFooter() && position == mDataList.size() - 1)) {
+        if (areItemsClickable && !(isHeader(position) || isFooter(position) || isSectionHeader(position))) {
             if (mOnItemClickListener != null) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mOnItemClickListener.onItemClicked(holder.getAdapterPosition(), itemInfo, holder);
+                        int adapterPosition = holder.getAdapterPosition();
+                        if (adapterPosition != NO_POSITION) {
+                            mOnItemClickListener.onItemClicked(adapterPosition, itemInfo, holder);
+                        }
                     }
                 });
             }
@@ -73,21 +76,27 @@ public abstract class GenericRecyclerViewAdapter
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        return mOnItemLongClickListener.onItemLongClicked(holder.getAdapterPosition(),
-                                itemInfo, holder);
+                        int adapterPosition = holder.getAdapterPosition();
+                        return adapterPosition != NO_POSITION
+                                && mOnItemLongClickListener.onItemLongClicked(adapterPosition, itemInfo, holder);
                     }
                 });
             }
         }
         if (areItemsExpandable && holder instanceof OnExpandListener) {
-            final boolean isExpanded = position == expandedPosition;
+            final boolean isExpanded = expandedPosition.contains(position);
             ((OnExpandListener) holder).expand(isExpanded);
             holder.itemView.setActivated(true);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    expandedPosition = isExpanded ? -1 : holder.getAdapterPosition();
-                    notifyDataSetChanged();
+                    int adapterPosition = holder.getAdapterPosition();
+                    if (isExpanded) {
+                        expandedPosition.add(adapterPosition);
+                    } else {
+                        expandedPosition.remove(adapterPosition);
+                    }
+                    notifyItemChanged(adapterPosition);
                 }
             });
         }
@@ -95,15 +104,7 @@ public abstract class GenericRecyclerViewAdapter
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0 && hasHeader()) {
-            return ItemInfo.HEADER;
-        } else if (position == mDataList.size() - 1 && mIsLoadingFooterAdded) {
-            return ItemInfo.LOADING;
-        } else if (position == mDataList.size() - 1 && !mIsLoadingFooterAdded && hasFooter()) {
-            return ItemInfo.FOOTER;
-        } else {
-            return mDataList.get(position).getLayoutId();
-        }
+        return mDataList.get(position).getLayoutId();
     }
 
     @Override
@@ -142,36 +143,18 @@ public abstract class GenericRecyclerViewAdapter
         this.mSectionTitleProvider = mSectionTitleProvider;
     }
 
-    @SuppressWarnings(UNUSED)
     public ItemInfo getItem(int index) {
         return mDataList.get(index);
     }
 
-    @SuppressWarnings(UNUSED)
     public ItemInfo getFirstItem() {
         return mDataList.get(0);
     }
 
-    @SuppressWarnings(UNUSED)
     public ItemInfo getLastItem() {
         return mDataList.get(mDataList.size() - 1);
     }
 
-    public List<Long> getSelectedItemsIds() {
-        ArrayList<Long> integers = new ArrayList<>();
-        for (int i = 0; i < mDataList.size(); i++) {
-            try {
-                if (getSelectedItemsIndices().contains(i)) {
-                    integers.add(mDataList.get(i).getId());
-                }
-            } catch (Exception e) {
-                Log.e("GRVAdapter", "getSelectedItemsIds", e);
-            }
-        }
-        return integers;
-    }
-
-    @SuppressWarnings(UNUSED)
     public int getPureSize() {
         return getPureDataList().size();
     }
@@ -188,7 +171,6 @@ public abstract class GenericRecyclerViewAdapter
         mOnSwipeListener = onSwipeListener;
     }
 
-    @SuppressWarnings(UNUSED)
     public boolean hasItemById(long itemId) {
         for (ItemInfo itemInfo : mDataList) {
             if (itemInfo.getId() == itemId) {
@@ -198,7 +180,6 @@ public abstract class GenericRecyclerViewAdapter
         return false;
     }
 
-    @SuppressWarnings(UNUSED)
     public int getItemIndexById(long itemId) {
         for (int i = 0; i < mDataList.size(); i++) {
             if (mDataList.get(i).getId() == itemId) {
@@ -208,7 +189,6 @@ public abstract class GenericRecyclerViewAdapter
         return -1;
     }
 
-    @SuppressWarnings(UNUSED)
     public ItemInfo getItemById(long itemId) throws IllegalAccessException {
         for (ItemInfo itemInfo : mDataList) {
             if (itemInfo.getId() == itemId) {
@@ -218,23 +198,19 @@ public abstract class GenericRecyclerViewAdapter
         throw new IllegalAccessException("Item with id " + itemId + " does not exist!");
     }
 
-    @SuppressWarnings(UNUSED)
     public void disableViewHolder(int index) {
         mDataList.get(index).setEnabled(false);
     }
 
-    @SuppressWarnings(UNUSED)
     public void enableViewHolder(int index) {
         mDataList.get(index).setEnabled(true);
         notifyItemChanged(index);
     }
 
-    @SuppressWarnings(UNUSED)
     public boolean hasHeader() {
         return mHasHeader;
     }
 
-    @SuppressWarnings(UNUSED)
     public void setHasHeader(boolean hasHeader, String label) {
         if (!mHasHeader && hasHeader) {
             mHasHeader = true;
@@ -247,7 +223,6 @@ public abstract class GenericRecyclerViewAdapter
         return mHasFooter;
     }
 
-    @SuppressWarnings(UNUSED)
     public void setHasFooter(boolean hasFooter, String label) {
         if (!mHasFooter && hasFooter) {
             mHasFooter = true;
@@ -258,7 +233,6 @@ public abstract class GenericRecyclerViewAdapter
         }
     }
 
-    @SuppressWarnings(UNUSED)
     public void addLoading() {
         mIsLoadingFooterAdded = true;
         if (!mDataList.isEmpty()) {
@@ -268,7 +242,6 @@ public abstract class GenericRecyclerViewAdapter
         }
     }
 
-    @SuppressWarnings(UNUSED)
     public void removeLoading() {
         mIsLoadingFooterAdded = false;
         if (!mDataList.isEmpty()) {
@@ -291,7 +264,6 @@ public abstract class GenericRecyclerViewAdapter
         this.allowSelection = allowSelection;
     }
 
-    @SuppressWarnings(UNUSED)
     public boolean areItemsClickable() {
         return areItemsClickable;
     }
@@ -300,12 +272,10 @@ public abstract class GenericRecyclerViewAdapter
         this.areItemsClickable = areItemsClickable;
     }
 
-    @SuppressWarnings(UNUSED)
     public boolean areItemsExpandable() {
         return areItemsExpandable;
     }
 
-    @SuppressWarnings(UNUSED)
     public void setAreItemsExpandable(boolean areItemsExpandable) {
         this.areItemsExpandable = areItemsExpandable;
     }
@@ -313,7 +283,6 @@ public abstract class GenericRecyclerViewAdapter
     /**
      * Clears data from the mDataList without removing the header, footer and loading views!
      */
-    @SuppressWarnings(UNUSED)
     public void clearPureItemList() {
         int startIndex = 0;
         int endIndex = 0;
@@ -334,13 +303,11 @@ public abstract class GenericRecyclerViewAdapter
     /**
      * Clears data from the mDataList.
      */
-    @SuppressWarnings(UNUSED)
     public void clearItemList() {
         mDataList.clear();
         notifyDataSetChanged();
     }
 
-    @SuppressWarnings(UNUSED)
     public void appendWithoutDuplicateIds(List<ItemInfo> itemInfoList) {
         validateList(itemInfoList);
         if (android.os.Build.VERSION.SDK_INT >= M) {
@@ -364,51 +331,42 @@ public abstract class GenericRecyclerViewAdapter
         }
     }
 
-    @SuppressWarnings(UNUSED)
     public void appendList(List<ItemInfo> dataSet) {
         validateList(dataSet);
         mDataList.addAll(dataSet);
         notifyItemRangeInserted(getItemCount(), mDataList.size());
     }
 
-    @SuppressWarnings(UNUSED)
     public void appendList(int position, List<ItemInfo> dataSet) {
         validateList(dataSet);
         mDataList.addAll(position, dataSet);
         notifyItemRangeInserted(position, mDataList.size());
     }
 
-    @SuppressWarnings(UNUSED)
     public boolean isSectionHeader(int index) {
         return mDataList.get(index).getId() == SECTION_HEADER || mDataList.get(index).getLayoutId() == SECTION_HEADER;
     }
 
-    @SuppressWarnings(UNUSED)
     public boolean isFooter(int index) {
         return mDataList.get(index).getId() == ItemInfo.FOOTER || mDataList.get(index).getLayoutId() == ItemInfo.FOOTER;
     }
 
-    @SuppressWarnings(UNUSED)
     public boolean isHeader(int index) {
         return mDataList.get(index).getId() == ItemInfo.HEADER || mDataList.get(index).getLayoutId() == ItemInfo.HEADER;
     }
 
-    @SuppressWarnings(UNUSED)
     public boolean isLoading(int index) {
         return mDataList.get(index).getId() == ItemInfo.LOADING || mDataList.get(index).getLayoutId() == ItemInfo.LOADING;
     }
 
-    @SuppressWarnings(UNUSED)
     public void addSectionHeader(int index, String title) {
         addItem(index, new ItemInfo(title, SECTION_HEADER).setId(SECTION_HEADER));
     }
 
-    @SuppressWarnings(UNUSED)
     public void addSectionHeaderWithId(int index, String title, long id) {
         addItem(index, new ItemInfo(title, SECTION_HEADER).setId(id));
     }
 
-    @SuppressWarnings(UNUSED)
     public void removeSectionHeader(int index) throws IllegalAccessException {
         if (mDataList.get(index).getLayoutId() == SECTION_HEADER) {
             removeItem(index);
@@ -417,19 +375,9 @@ public abstract class GenericRecyclerViewAdapter
         }
     }
 
-    @SuppressWarnings(UNUSED)
     public List<ItemInfo> getPureDataList() {
         List<ItemInfo> pureSet = new ArrayList<>();
         pureSet.addAll(mDataList);
-        if (hasHeader()) {
-            pureSet.remove(0);
-        }
-        if (hasFooter()) {
-            pureSet.remove(pureSet.size() - 1);
-        }
-        if (mIsLoadingFooterAdded) {
-            pureSet.remove(pureSet.size() - 1);
-        }
         ItemInfo item;
         for (int i = 0; i < pureSet.size(); i++) {
             item = pureSet.get(i);
@@ -443,23 +391,6 @@ public abstract class GenericRecyclerViewAdapter
         return pureSet;
     }
 
-    @SuppressWarnings(UNUSED)
-    public List<ItemInfo> getPureDataListWithSectionHeaders() {
-        List<ItemInfo> pureSet = new ArrayList<>();
-        pureSet.addAll(mDataList);
-        if (hasHeader()) {
-            pureSet.remove(0);
-        }
-        if (hasFooter()) {
-            pureSet.remove(pureSet.size() - 1);
-        }
-        if (mIsLoadingFooterAdded) {
-            pureSet.remove(pureSet.size() - 1);
-        }
-        return pureSet;
-    }
-
-    @SuppressWarnings(UNUSED)
     public List<ItemInfo> getDataList() {
         return mDataList;
     }
@@ -476,7 +407,6 @@ public abstract class GenericRecyclerViewAdapter
      * @param position Position of the item to check
      * @return true if the item is selected, false otherwise
      */
-    @SuppressWarnings(UNUSED)
     public boolean isSelected(int position) throws IllegalStateException {
         if (allowSelection) {
             return getSelectedItemsIndices().contains(position);
@@ -490,7 +420,6 @@ public abstract class GenericRecyclerViewAdapter
      *
      * @param position Position of the item to toggle the selection status for
      */
-    @SuppressWarnings(UNUSED)
     public boolean toggleSelection(int position) throws IllegalStateException {
         if (allowSelection) {
             boolean isSelected;
@@ -513,7 +442,6 @@ public abstract class GenericRecyclerViewAdapter
      *
      * @param position Position of the item to toggle the selection status for
      */
-    @SuppressWarnings(UNUSED)
     public void selectItem(int position) throws IllegalStateException {
         if (allowSelection) {
             mSelectedItems.put(position, true);
@@ -528,7 +456,6 @@ public abstract class GenericRecyclerViewAdapter
      *
      * @param position Position of the item to toggle the selection status for
      */
-    @SuppressWarnings(UNUSED)
     public void unSelectItem(int position) throws IllegalStateException {
         if (allowSelection) {
             mSelectedItems.delete(position);
@@ -570,7 +497,6 @@ public abstract class GenericRecyclerViewAdapter
      *
      * @return List of selected items
      */
-    @SuppressWarnings(UNUSED)
     public List<Integer> getSelectedItemsIndices() throws IllegalStateException {
         if (allowSelection) {
             List<Integer> items = new ArrayList<>(mSelectedItems.size());
@@ -595,7 +521,15 @@ public abstract class GenericRecyclerViewAdapter
         }
     }
 
-    @SuppressWarnings(UNUSED)
+    public List<Long> getSelectedItemsIds() throws IllegalStateException {
+        List<ItemInfo> selectedItems = getSelectedItems();
+        List<Long> ids = new ArrayList<>(selectedItems.size());
+        for (ItemInfo itemInfo : selectedItems) {
+            ids.add(itemInfo.getId());
+        }
+        return ids;
+    }
+    
     public void removeItems(List<Integer> positions) {
         // Reverse-sort the list
         Collections.sort(positions, new Comparator<Integer>() {
@@ -640,14 +574,12 @@ public abstract class GenericRecyclerViewAdapter
         notifyItemRangeRemoved(positionStart, itemCount);
     }
 
-    @SuppressWarnings(UNUSED)
     public void animateTo(List<ItemInfo> models) {
         applyAndAnimateRemovals(models);
         applyAndAnimateAdditions(models);
         applyAndAnimateMovedItems(models);
     }
 
-    @SuppressWarnings(UNUSED)
     public void reloadData(List<ItemInfo> newModels) {
         for (ItemInfo item : mDataList) {
             if (newModels.contains(item)) {
@@ -657,7 +589,6 @@ public abstract class GenericRecyclerViewAdapter
         appendList(newModels);
     }
 
-    @SuppressWarnings(UNUSED)
     public void removeItemById(Long id) {
         for (ItemInfo item : mDataList) {
             if (item.getId() == id) {
@@ -666,7 +597,6 @@ public abstract class GenericRecyclerViewAdapter
         }
     }
 
-    @SuppressWarnings(UNUSED)
     public void removeItemsById(List<Long> ids) {
         List<ItemInfo> newList = new ArrayList<>(mDataList.size() - ids.size());
         for (ItemInfo item : mDataList) {

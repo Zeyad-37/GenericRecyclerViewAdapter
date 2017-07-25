@@ -24,8 +24,8 @@ public class ItemInfo {
         return this;
     }
 
-    public Object getData() {
-        return data;
+    public <T> T getData() {
+        return (T) data;
     }
 
     public void setData(Object data) {
@@ -60,9 +60,7 @@ public class ItemInfo {
             return true;
         if (!(o instanceof ItemInfo))
             return false;
-
         ItemInfo itemInfo = (ItemInfo) o;
-
         if (layoutId != itemInfo.layoutId)
             return false;
         if (id != itemInfo.id)
@@ -70,6 +68,5 @@ public class ItemInfo {
         if (isEnabled != itemInfo.isEnabled)
             return false;
         return data != null ? data.equals(itemInfo.data) : itemInfo.data == null;
-
     }
 }
