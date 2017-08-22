@@ -1,5 +1,7 @@
 package com.zeyad.gadapter;
 
+import android.support.annotation.NonNull;
+
 /**
  * @author by zeyad on 20/05/16.
  */
@@ -10,7 +12,7 @@ public class ItemInfo {
     private long id;
     private boolean isEnabled = true;
 
-    public ItemInfo(Object data, int layoutId) {
+    public ItemInfo(@NonNull Object data, int layoutId) {
         this.data = data;
         this.layoutId = layoutId;
     }
@@ -24,11 +26,12 @@ public class ItemInfo {
         return this;
     }
 
+    @NonNull
     public <T> T getData() {
         return (T) data;
     }
 
-    public void setData(Object data) {
+    public void setData(@NonNull Object data) {
         this.data = data;
     }
 
@@ -61,12 +64,7 @@ public class ItemInfo {
         if (!(o instanceof ItemInfo))
             return false;
         ItemInfo itemInfo = (ItemInfo) o;
-        if (layoutId != itemInfo.layoutId)
-            return false;
-        if (id != itemInfo.id)
-            return false;
-        if (isEnabled != itemInfo.isEnabled)
-            return false;
-        return data != null ? data.equals(itemInfo.data) : itemInfo.data == null;
+        return layoutId == itemInfo.layoutId && id == itemInfo.id && isEnabled == itemInfo.isEnabled && (
+                data != null ? data.equals(itemInfo.data) : itemInfo.data == null);
     }
 }

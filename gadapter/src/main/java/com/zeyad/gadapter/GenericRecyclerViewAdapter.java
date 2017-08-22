@@ -1,5 +1,6 @@
 package com.zeyad.gadapter;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.ArraySet;
 import android.util.SparseBooleanArray;
@@ -29,27 +30,28 @@ public abstract class GenericRecyclerViewAdapter
         implements ItemTouchHelperAdapter, StickyHeaderHandler {
 
     private static final String SELECTION_DISABLED = "Selection mode is disabled!";
-    public final LayoutInflater mLayoutInflater;
+    private final LayoutInflater mLayoutInflater;
     private final SparseBooleanArray mSelectedItems;
     private List<ItemInfo> mDataList;
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
     private OnSwipeListener mOnSwipeListener;
     private SectionTitleProvider mSectionTitleProvider;
+    private Set<Integer> expandedPositions;
     private boolean mIsLoadingFooterAdded,
             mHasHeader,
             mHasFooter,
             allowSelection,
             areItemsExpandable,
-            areItemsClickable = true;
-    private Set<Integer> expandedPosition;
+            areItemsClickable;
 
     public GenericRecyclerViewAdapter(LayoutInflater layoutInflater, List<ItemInfo> list) {
         validateList(list);
         mLayoutInflater = layoutInflater;
         mDataList = list;
         mSelectedItems = new SparseBooleanArray();
-        expandedPosition = new HashSet<>();
+        expandedPositions = new HashSet<>();
+        areItemsClickable = true;
     }
 
     @Override
@@ -84,7 +86,7 @@ public abstract class GenericRecyclerViewAdapter
             }
         }
         if (areItemsExpandable && holder instanceof OnExpandListener) {
-            final boolean isExpanded = expandedPosition.contains(position);
+            final boolean isExpanded = expandedPositions.contains(position);
             ((OnExpandListener) holder).expand(isExpanded);
             holder.itemView.setActivated(true);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -92,9 +94,9 @@ public abstract class GenericRecyclerViewAdapter
                 public void onClick(View v) {
                     int adapterPosition = holder.getAdapterPosition();
                     if (isExpanded) {
-                        expandedPosition.add(adapterPosition);
+                        expandedPositions.add(adapterPosition);
                     } else {
-                        expandedPosition.remove(adapterPosition);
+                        expandedPositions.remove(adapterPosition);
                     }
                     notifyItemChanged(adapterPosition);
                 }
@@ -668,13 +670,16 @@ public abstract class GenericRecyclerViewAdapter
         }
     }
 
+    public LayoutInflater getLayoutInflater() {
+        return mLayoutInflater;
+    }
+
     public interface OnItemClickListener {
         void onItemClicked(int position, ItemInfo itemInfo, ViewHolder holder);
     }
 
     public interface OnItemLongClickListener {
-        boolean onItemLongClicked(
-                int position, ItemInfo itemInfo, GenericRecyclerViewAdapter.ViewHolder holder);
+        boolean onItemLongClicked(int position, ItemInfo itemInfo, ViewHolder holder);
     }
 
     public interface OnSwipeListener {
@@ -704,6 +709,6 @@ public abstract class GenericRecyclerViewAdapter
         }
 
         public abstract void bindData(
-                T data, boolean itemSelected, int position, boolean isEnabled);
+                @NonNull T data, boolean itemSelected, int position, boolean isEnabled);
     }
 }
