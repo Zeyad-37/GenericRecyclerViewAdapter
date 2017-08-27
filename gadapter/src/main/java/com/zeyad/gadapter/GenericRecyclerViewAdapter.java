@@ -37,7 +37,7 @@ public abstract class GenericRecyclerViewAdapter
     private OnItemLongClickListener mOnItemLongClickListener;
     private OnSwipeListener mOnSwipeListener;
     private SectionTitleProvider mSectionTitleProvider;
-    private Set<Integer> expandedPositions;
+    private ArrayList<Integer> expandedPositions;
     private boolean mIsLoadingFooterAdded,
             mHasHeader,
             mHasFooter,
@@ -45,12 +45,20 @@ public abstract class GenericRecyclerViewAdapter
             areItemsExpandable,
             areItemsClickable;
 
+    public GenericRecyclerViewAdapter(LayoutInflater layoutInflater) {
+        mLayoutInflater = layoutInflater;
+        mDataList = new ArrayList<>();
+        mSelectedItems = new SparseBooleanArray();
+        expandedPositions = new ArrayList<>();
+        areItemsClickable = true;
+    }
+
     public GenericRecyclerViewAdapter(LayoutInflater layoutInflater, List<ItemInfo> list) {
         validateList(list);
         mLayoutInflater = layoutInflater;
         mDataList = list;
         mSelectedItems = new SparseBooleanArray();
-        expandedPositions = new HashSet<>();
+        expandedPositions = new ArrayList<>();
         areItemsClickable = true;
     }
 
@@ -86,18 +94,24 @@ public abstract class GenericRecyclerViewAdapter
             }
         }
         if (areItemsExpandable && holder instanceof OnExpandListener) {
-            final boolean isExpanded = expandedPositions.contains(position);
-            ((OnExpandListener) holder).expand(isExpanded);
+            ((OnExpandListener) holder).expand(expandedPositions.contains(position));
             holder.itemView.setActivated(true);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int adapterPosition = holder.getAdapterPosition();
-                    if (isExpanded) {
-                        expandedPositions.add(adapterPosition);
+                    if (expandedPositions.contains(adapterPosition)) {
+                        for (int i = 0; i < expandedPositions.size(); i++) {
+                            if (expandedPositions.get(i) == adapterPosition) {
+                                expandedPositions.remove(i);
+                            }
+                        }
                     } else {
-                        expandedPositions.remove(adapterPosition);
+                        expandedPositions.add(adapterPosition);
                     }
+                    //                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    //                        TransitionManager.beginDelayedTransition((ViewGroup) holder.itemView.getParent());
+                    //                    }
                     notifyItemChanged(adapterPosition);
                 }
             });
