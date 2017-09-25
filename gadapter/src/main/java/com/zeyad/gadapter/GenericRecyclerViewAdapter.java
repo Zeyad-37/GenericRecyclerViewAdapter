@@ -18,6 +18,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import rx.Observable;
+import rx.Subscription;
+import rx.functions.Action1;
+
 import static android.os.Build.VERSION_CODES.M;
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
 import static com.zeyad.gadapter.ItemInfo.SECTION_HEADER;
@@ -415,6 +422,43 @@ public abstract class GenericRecyclerViewAdapter
         validateList(dataSet);
         mDataList = dataSet;
         notifyDataSetChanged();
+    }
+
+    /**
+     * Using a {@link Flowable} as a data source to push changes and returns {@link Disposable} for the calling component to handle the life cycle.
+     *
+     * @param dataFlowable data source
+     *
+     * @return {@link Disposable}
+     */
+    public Disposable setDataObservable(Flowable<List<ItemInfo>> dataFlowable) {
+        return dataFlowable.subscribe(new Consumer<List<ItemInfo>>() {
+            @Override
+            public void accept(List<ItemInfo> dataSet) throws Exception {
+                validateList(dataSet);
+                mDataList = dataSet;
+                notifyDataSetChanged();
+            }
+        });
+    }
+
+    /**
+     * Using a {@link Observable} as a data source to push changes and returns {@link Subscription} for the calling component to handle the life
+     * cycle.
+     *
+     * @param dataObservable data source
+     *
+     * @return {@link Subscription}
+     */
+    public Subscription setDataObservable(Observable<List<ItemInfo>> dataObservable) {
+        return dataObservable.subscribe(new Action1<List<ItemInfo>>() {
+            @Override
+            public void call(List<ItemInfo> dataSet) {
+                validateList(dataSet);
+                mDataList = dataSet;
+                notifyDataSetChanged();
+            }
+        });
     }
 
     /**
