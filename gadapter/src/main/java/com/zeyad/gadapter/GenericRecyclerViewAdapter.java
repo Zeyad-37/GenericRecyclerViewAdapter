@@ -425,13 +425,14 @@ public abstract class GenericRecyclerViewAdapter
     }
 
     /**
-     * Using a {@link Flowable} as a data source to push changes and returns {@link Disposable} for the calling component to handle the life cycle.
+     * Using a {@link Flowable} as a data source to push changes while returning {@link Disposable} for the calling component to handle the life
+     * cycle.
      *
      * @param dataFlowable data source
      *
      * @return {@link Disposable}
      */
-    public Disposable setDataObservable(Flowable<List<ItemInfo>> dataFlowable) {
+    public Disposable setDataFlowable(Flowable<List<ItemInfo>> dataFlowable) {
         return dataFlowable.subscribe(new Consumer<List<ItemInfo>>() {
             @Override
             public void accept(List<ItemInfo> dataSet) throws Exception {
@@ -443,7 +444,7 @@ public abstract class GenericRecyclerViewAdapter
     }
 
     /**
-     * Using a {@link Observable} as a data source to push changes and returns {@link Subscription} for the calling component to handle the life
+     * Using a {@link Observable} as a data source to push changes while returning {@link Subscription} for the calling component to handle the life
      * cycle.
      *
      * @param dataObservable data source
