@@ -418,12 +418,6 @@ public abstract class GenericRecyclerViewAdapter
         return mDataList;
     }
 
-    public void setDataList(List<ItemInfo> dataSet) {
-        validateList(dataSet);
-        mDataList = dataSet;
-        notifyDataSetChanged();
-    }
-
     /**
      * Using a {@link Flowable} as a data source to push changes while returning {@link Disposable} for the calling component to handle the life
      * cycle.
@@ -436,9 +430,7 @@ public abstract class GenericRecyclerViewAdapter
         return dataFlowable.subscribe(new Consumer<List<ItemInfo>>() {
             @Override
             public void accept(List<ItemInfo> dataSet) throws Exception {
-                validateList(dataSet);
-                mDataList = dataSet;
-                notifyDataSetChanged();
+                animateTo(dataSet);
             }
         });
     }
@@ -455,9 +447,7 @@ public abstract class GenericRecyclerViewAdapter
         return dataObservable.subscribe(new Action1<List<ItemInfo>>() {
             @Override
             public void call(List<ItemInfo> dataSet) {
-                validateList(dataSet);
-                mDataList = dataSet;
-                notifyDataSetChanged();
+                animateTo(dataSet);
             }
         });
     }
@@ -636,9 +626,11 @@ public abstract class GenericRecyclerViewAdapter
     }
 
     public void animateTo(List<ItemInfo> models) {
+        validateList(models);
         applyAndAnimateRemovals(models);
         applyAndAnimateAdditions(models);
         applyAndAnimateMovedItems(models);
+        mDataList = models;
     }
 
     public void reloadData(List<ItemInfo> newModels) {
