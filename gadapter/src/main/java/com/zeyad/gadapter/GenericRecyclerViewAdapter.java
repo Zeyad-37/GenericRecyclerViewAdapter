@@ -1,5 +1,6 @@
 package com.zeyad.gadapter;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.ArraySet;
@@ -8,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.zeyad.gadapter.Observables.ItemClickObservable;
+import com.zeyad.gadapter.Observables.ItemLongClickObservable;
+import com.zeyad.gadapter.Observables.ItemSwipeObservable;
 import com.zeyad.gadapter.fastscroll.SectionTitleProvider;
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler;
 
@@ -36,6 +40,9 @@ public abstract class GenericRecyclerViewAdapter
         extends RecyclerView.Adapter<GenericRecyclerViewAdapter.ViewHolder>
         implements ItemTouchHelperAdapter, StickyHeaderHandler {
 
+    public static final int DEFAULT_INITIAL_ELEVATION = 1;
+    public static final int DEFAULT_FINAL_ELEVATION = 6;
+    public static final int DEFAULT_SCROLL_FINAL_ELEVATION = 6;
     private static final String SELECTION_DISABLED = "Selection mode is disabled!";
     private final LayoutInflater mLayoutInflater;
     private final SparseBooleanArray mSelectedItems;
@@ -51,6 +58,9 @@ public abstract class GenericRecyclerViewAdapter
             allowSelection,
             areItemsExpandable,
             areItemsClickable;
+    private int mInitialElevation;
+    private int mFinalElevation;
+    private int mScrollFinalPosition;
 
     public GenericRecyclerViewAdapter(LayoutInflater layoutInflater) {
         mLayoutInflater = layoutInflater;
@@ -186,12 +196,24 @@ public abstract class GenericRecyclerViewAdapter
         mOnItemClickListener = onItemClickListener;
     }
 
+    public ItemClickObservable getItemClickObservable() {
+        return new ItemClickObservable(this);
+    }
+
     public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
         mOnItemLongClickListener = onItemLongClickListener;
     }
 
+    public ItemLongClickObservable getItemLongClickObservable() {
+        return new ItemLongClickObservable(this);
+    }
+
     public void setOnItemSwipeListener(OnSwipeListener onSwipeListener) {
         mOnSwipeListener = onSwipeListener;
+    }
+
+    public ItemSwipeObservable getItemSwipeObservable() {
+        return new ItemSwipeObservable(this);
     }
 
     public boolean hasItemById(long itemId) {
@@ -423,7 +445,6 @@ public abstract class GenericRecyclerViewAdapter
      * cycle.
      *
      * @param dataFlowable data source
-     *
      * @return {@link Disposable}
      */
     public Disposable setDataFlowable(Flowable<List<ItemInfo>> dataFlowable) {
@@ -440,7 +461,6 @@ public abstract class GenericRecyclerViewAdapter
      * cycle.
      *
      * @param dataObservable data source
-     *
      * @return {@link Subscription}
      */
     public Subscription setDataObservable(Observable<List<ItemInfo>> dataObservable) {
@@ -580,7 +600,7 @@ public abstract class GenericRecyclerViewAdapter
         }
         return ids;
     }
-    
+
     public void removeItems(List<Integer> positions) {
         // Reverse-sort the list
         Collections.sort(positions, new Comparator<Integer>() {
@@ -611,6 +631,8 @@ public abstract class GenericRecyclerViewAdapter
             }
         }
     }
+
+    //-----------------animations--------------------------//
 
     private void validateList(List<ItemInfo> dataList) {
         if (dataList == null) {
@@ -660,7 +682,60 @@ public abstract class GenericRecyclerViewAdapter
         animateTo(newList);
     }
 
-    //-----------------animations--------------------------//
+    private void onScroll(int position) {
+        // shadow shall not increase if current position
+        // is higher than scroll's final position
+        if (position <= mScrollFinalPosition) {
+//            setCardElevation(calculateElevation(position));
+        } else {
+            // thread below fixes issue #1, avoiding elevation
+            // setting problems when fast scrolling
+            final int mPositionBackup = position;
+            position = mScrollFinalPosition;
+            final int properElevation = calculateElevation(position);
+            position = mPositionBackup;
+//            if (getCardElevation() != properElevation) {
+//                setCardElevation(properElevation);
+//            }
+        }
+    }
+
+    /**
+     * @param value The percentage of the screen's height that is
+     *              going to be scrolled to reach the final elevation
+     * @return Own object
+     */
+    public void setScrollFinalPosition(final int value) {
+        final int screenHeight = getContext().getResources().getDisplayMetrics().heightPixels;
+        mScrollFinalPosition = dp2px((int) (screenHeight * (value / 100.0)));
+    }
+
+    /**
+     * <pre>
+     *     author: Blankj
+     *     blog  : http://blankj.com
+     *     time  : 2016/08/13
+     *     desc  : 转换相关工具类
+     * </pre>
+     * <p>
+     * Method got from:
+     * https://github.com/Blankj/AndroidUtilCode/blob/master/utilcode/src/main/java/com/blankj/utilcode/util/ConvertUtils.java
+     */
+    private int dp2px(final int dpValue) {
+        final float scale = getContext().getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
+    private int calculateElevation(int position) {
+        // getting back to rule of three:
+        // mFinalElevation (px) = mScrollFinalPosition (px)
+        // newElevation    (px) = position            (px)
+        int newElevation = (mFinalElevation * position) / mScrollFinalPosition;
+        // avoid values under minimum value
+        if (newElevation < mInitialElevation)
+            newElevation = mInitialElevation;
+        return newElevation;
+    }
 
     public ItemInfo removeItem(int position) {
         ItemInfo itemInfo = mDataList.remove(position);
@@ -723,6 +798,10 @@ public abstract class GenericRecyclerViewAdapter
 
     public LayoutInflater getLayoutInflater() {
         return mLayoutInflater;
+    }
+
+    private Context getContext() {
+        return mLayoutInflater.getContext();
     }
 
     public interface OnItemClickListener {

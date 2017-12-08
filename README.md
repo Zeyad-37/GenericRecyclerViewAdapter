@@ -6,7 +6,7 @@ A General Purpose adapter, equipped with all kinds of functions and animations.
 
 1- Multiple View Type Support 
 
-2- Expandable view holders
+2- Expandable genericRecyclerViewAdapter holders
 
 3- Selection support
 
