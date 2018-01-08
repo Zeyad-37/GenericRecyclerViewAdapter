@@ -2,6 +2,7 @@ package com.zeyad.gadapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.ArraySet;
 import android.util.SparseBooleanArray;
@@ -440,6 +441,12 @@ public abstract class GenericRecyclerViewAdapter
         return mDataList;
     }
 
+    public void setDataList(List<ItemInfo> dataList, DiffUtil.DiffResult diffResult) {
+        validateList(dataList);
+        mDataList = dataList;
+        diffResult.dispatchUpdatesTo(this);
+    }
+
     /**
      * Using a {@link Flowable} as a data source to push changes while returning {@link Disposable} for the calling component to handle the life
      * cycle.
@@ -478,7 +485,7 @@ public abstract class GenericRecyclerViewAdapter
      * @param position Position of the item to check
      * @return true if the item is selected, false otherwise
      */
-    public boolean isSelected(int position) throws IllegalStateException {
+    public boolean isSelected(int position) {
         if (allowSelection) {
             return getSelectedItemsIndices().contains(position);
         } else {
@@ -491,7 +498,7 @@ public abstract class GenericRecyclerViewAdapter
      *
      * @param position Position of the item to toggle the selection status for
      */
-    public boolean toggleSelection(int position) throws IllegalStateException {
+    public boolean toggleSelection(int position) {
         if (allowSelection) {
             boolean isSelected;
             if (mSelectedItems.get(position, false)) {
@@ -513,7 +520,7 @@ public abstract class GenericRecyclerViewAdapter
      *
      * @param position Position of the item to toggle the selection status for
      */
-    public void selectItem(int position) throws IllegalStateException {
+    public void selectItem(int position) {
         if (allowSelection) {
             mSelectedItems.put(position, true);
             notifyItemChanged(position);
@@ -527,7 +534,7 @@ public abstract class GenericRecyclerViewAdapter
      *
      * @param position Position of the item to toggle the selection status for
      */
-    public void unSelectItem(int position) throws IllegalStateException {
+    public void unSelectItem(int position) {
         if (allowSelection) {
             mSelectedItems.delete(position);
         } else {
@@ -538,7 +545,7 @@ public abstract class GenericRecyclerViewAdapter
     /**
      * Clear the selection status for all items
      */
-    public void clearSelection() throws IllegalStateException {
+    public void clearSelection() {
         if (allowSelection) {
             List<Integer> selection = getSelectedItemsIndices();
             mSelectedItems.clear();
@@ -555,7 +562,7 @@ public abstract class GenericRecyclerViewAdapter
      *
      * @return Selected items count
      */
-    public int getSelectedItemCount() throws IllegalStateException {
+    public int getSelectedItemCount() {
         if (allowSelection) {
             return mSelectedItems.size();
         } else {
@@ -568,7 +575,7 @@ public abstract class GenericRecyclerViewAdapter
      *
      * @return List of selected items
      */
-    public List<Integer> getSelectedItemsIndices() throws IllegalStateException {
+    public List<Integer> getSelectedItemsIndices() {
         if (allowSelection) {
             List<Integer> items = new ArrayList<>(mSelectedItems.size());
             for (int i = 0; i < mSelectedItems.size(); ++i) {
@@ -580,7 +587,7 @@ public abstract class GenericRecyclerViewAdapter
         }
     }
 
-    public List<ItemInfo> getSelectedItems() throws IllegalStateException {
+    public List<ItemInfo> getSelectedItems() {
         if (allowSelection) {
             List<ItemInfo> items = new ArrayList<>(mSelectedItems.size());
             for (int i = 0; i < mSelectedItems.size(); ++i) {
@@ -592,13 +599,22 @@ public abstract class GenericRecyclerViewAdapter
         }
     }
 
-    public List<Long> getSelectedItemsIds() throws IllegalStateException {
+    public List<Long> getSelectedItemsIds() {
         List<ItemInfo> selectedItems = getSelectedItems();
         List<Long> ids = new ArrayList<>(selectedItems.size());
         for (ItemInfo itemInfo : selectedItems) {
             ids.add(itemInfo.getId());
         }
         return ids;
+    }
+
+    public <T> List<T> getSelectedItemsBundle() {
+        List<ItemInfo> selectedItems = getSelectedItems();
+        List<T> bundles = new ArrayList<>(selectedItems.size());
+        for (ItemInfo itemInfo : selectedItems) {
+            bundles.add(itemInfo.<T>getData());
+        }
+        return bundles;
     }
 
     public void removeItems(List<Integer> positions) {
