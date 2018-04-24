@@ -32,7 +32,7 @@ public final class ItemLongClickObservable extends Observable<ClickEvent> {
         Listener(final Observer<? super ClickEvent> observer) {
             this.onItemLongClickListener = new GenericRecyclerViewAdapter.OnItemLongClickListener() {
                 @Override
-                public boolean onItemLongClicked(int position, ItemInfo itemInfo, GenericRecyclerViewAdapter.ViewHolder holder) {
+                public boolean onItemLongClicked(int position, ItemInfo itemInfo, GenericRecyclerViewAdapter.GenericViewHolder holder) {
                     if (!isDisposed()) {
                         observer.onNext(new ClickEvent(position, itemInfo, holder));
                     }

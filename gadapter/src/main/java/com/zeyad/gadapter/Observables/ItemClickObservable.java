@@ -32,7 +32,7 @@ public final class ItemClickObservable extends Observable<ClickEvent> {
         Listener(final Observer<? super ClickEvent> observer) {
             this.onItemClickListener = new GenericRecyclerViewAdapter.OnItemClickListener() {
                 @Override
-                public void onItemClicked(int position, ItemInfo itemInfo, GenericRecyclerViewAdapter.ViewHolder holder) {
+                public void onItemClicked(int position, ItemInfo itemInfo, GenericRecyclerViewAdapter.GenericViewHolder holder) {
                     if (!isDisposed()) {
                         observer.onNext(new ClickEvent(position, itemInfo, holder));
                     }

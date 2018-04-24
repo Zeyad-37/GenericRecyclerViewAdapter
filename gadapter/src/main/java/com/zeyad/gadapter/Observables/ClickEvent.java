@@ -10,10 +10,10 @@ public final class ClickEvent {
 
     private final int position;
     private final ItemInfo itemInfo;
-    private final GenericRecyclerViewAdapter.ViewHolder holder;
+    private final GenericRecyclerViewAdapter.GenericViewHolder holder;
 
 
-    public ClickEvent(int position, ItemInfo itemInfo, GenericRecyclerViewAdapter.ViewHolder holder) {
+    public ClickEvent(int position, ItemInfo itemInfo, GenericRecyclerViewAdapter.GenericViewHolder holder) {
         this.position = position;
         this.itemInfo = itemInfo;
         this.holder = holder;
@@ -27,7 +27,7 @@ public final class ClickEvent {
         return itemInfo;
     }
 
-    public GenericRecyclerViewAdapter.ViewHolder getHolder() {
+    public GenericRecyclerViewAdapter.GenericViewHolder getHolder() {
         return holder;
     }
 }
