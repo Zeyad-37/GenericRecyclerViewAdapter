@@ -1,20 +1,54 @@
 package com.zeyad.gadapter;
 
-import android.support.annotation.NonNull;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * @author by zeyad on 20/05/16.
  */
-public class ItemInfo {
-    public static final int HEADER = 1, FOOTER = 2, LOADING = 3, SECTION_HEADER = 4;
+public class ItemInfo implements Parcelable {
+
+    public static final int HEADER = 1;
+    public static final int FOOTER = 2;
+    public static final int LOADING = 3;
+    public static final int SECTION_HEADER = 4;
     private final int layoutId;
     private Object data;
     private long id;
     private boolean isEnabled = true;
+    public static final Creator<ItemInfo> CREATOR = new Creator<ItemInfo>() {
+        @Override
+        public ItemInfo createFromParcel(Parcel in) {
+            return new ItemInfo(in);
+        }
 
-    public ItemInfo(@NonNull Object data, int layoutId) {
+        @Override
+        public ItemInfo[] newArray(int size) {
+            return new ItemInfo[size];
+        }
+    };
+
+    public ItemInfo(Object data, int layoutId) {
         this.data = data;
         this.layoutId = layoutId;
+    }
+
+    protected ItemInfo(Parcel in) {
+        layoutId = in.readInt();
+        id = in.readLong();
+        isEnabled = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(layoutId);
+        dest.writeLong(id);
+        dest.writeByte((byte) (isEnabled ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public long getId() {
@@ -26,12 +60,11 @@ public class ItemInfo {
         return this;
     }
 
-    @NonNull
     public <T> T getData() {
         return (T) data;
     }
 
-    public void setData(@NonNull Object data) {
+    public void setData(Object data) {
         this.data = data;
     }
 

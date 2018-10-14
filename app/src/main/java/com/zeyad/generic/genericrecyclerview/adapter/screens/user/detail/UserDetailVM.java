@@ -1,13 +1,14 @@
 package com.zeyad.generic.genericrecyclerview.adapter.screens.user.detail;
 
-import com.zeyad.rxredux.core.redux.BaseEvent;
-import com.zeyad.rxredux.core.redux.BaseViewModel;
-import com.zeyad.rxredux.core.redux.SuccessStateAccumulator;
+import com.zeyad.rxredux.core.BaseEvent;
+import com.zeyad.rxredux.core.viewmodel.BaseViewModel;
+import com.zeyad.rxredux.core.viewmodel.StateReducer;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 
 /**
@@ -16,25 +17,6 @@ import io.reactivex.functions.Function;
 public class UserDetailVM extends BaseViewModel<UserDetailState> {
 
     //    private IDataService dataUseCase;
-
-    @Override
-    public void init(SuccessStateAccumulator<UserDetailState> successStateAccumulator,
-            UserDetailState initialState, Object... otherDependencies) {
-        setSuccessStateAccumulator(successStateAccumulator);
-        setInitialState(initialState);
-        //        dataUseCase = (IDataService) otherDependencies[0];
-    }
-
-    @Override
-    public Function<BaseEvent, Flowable<?>> mapEventsToExecutables() {
-        return new Function<BaseEvent, Flowable<?>>() {
-            @Override
-            public Flowable<?> apply(@NonNull BaseEvent baseEvent) throws Exception {
-                return getRepositories(((GetReposEvent) baseEvent).getLogin());
-            }
-        };
-        //        return event -> getRepositories(((GetReposEvent) event).getLogin());
-    }
 
     public Flowable<List<Repository>> getRepositories(String userLogin) {
         return Flowable.empty();
@@ -45,5 +27,21 @@ public class UserDetailVM extends BaseViewModel<UserDetailState> {
         //                                .url(String.format(REPOSITORIES, userLogin))
         //                                .build())) :
         //               Flowable.error(new IllegalArgumentException("User name can not be empty"));
+    }
+
+    @NotNull
+    @Override
+    public Function<BaseEvent<?>, Flowable<?>> mapEventsToActions() {
+        return baseEvent -> getRepositories(((GetReposEvent) baseEvent).getPayLoad());
+    }
+
+    @NotNull
+    @Override
+    public StateReducer<UserDetailState> stateReducer() {
+        return (newResult, baseEvent, currentStateBundle) -> UserDetailState.builder()
+                .setRepos((List<Repository>) newResult)
+                .setUser(currentStateBundle.getUser())
+                .setIsTwoPane(currentStateBundle.isTwoPane())
+                .build();
     }
 }

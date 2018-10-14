@@ -52,11 +52,11 @@ public class FastScroller extends LinearLayout {
     public FastScroller(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setClipChildren(false);
-        TypedArray style = context.obtainStyledAttributes(attrs, R.styleable.fastscroll__fastScroller, R.attr.fastscroll__style, 0);
+        TypedArray style = context.obtainStyledAttributes(attrs, R.styleable.fastscroll_fastScroller, R.attr.fastscroll_style, 0);
         try {
-            bubbleColor = style.getColor(R.styleable.fastscroll__fastScroller_fastscroll__bubbleColor, STYLE_NONE);
-            handleColor = style.getColor(R.styleable.fastscroll__fastScroller_fastscroll__handleColor, STYLE_NONE);
-            bubbleTextAppearance = style.getResourceId(R.styleable.fastscroll__fastScroller_fastscroll__bubbleTextAppearance, STYLE_NONE);
+            bubbleColor = style.getColor(R.styleable.fastscroll_fastScroller_fastscroll_bubbleColor, STYLE_NONE);
+            handleColor = style.getColor(R.styleable.fastscroll_fastScroller_fastscroll_handleColor, STYLE_NONE);
+            bubbleTextAppearance = style.getResourceId(R.styleable.fastscroll_fastScroller_fastscroll_bubbleTextAppearance, STYLE_NONE);
         } finally {
             style.recycle();
         }

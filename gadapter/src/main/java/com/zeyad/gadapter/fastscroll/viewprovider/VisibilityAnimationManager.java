@@ -80,8 +80,8 @@ class VisibilityAnimationManager {
 
     static abstract class AbsBuilder<T extends VisibilityAnimationManager> {
         protected final View view;
-        int showAnimatorResource = R.animator.fastscroll__default_show;
-        int hideAnimatorResource = R.animator.fastscroll__default_hide;
+        int showAnimatorResource = R.animator.fastscroll_default_show;
+        int hideAnimatorResource = R.animator.fastscroll_default_hide;
         int hideDelay = 1000;
         float pivotX = 0.5f;
         float pivotY = 0.5f;

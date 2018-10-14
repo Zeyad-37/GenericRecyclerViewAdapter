@@ -1,5 +1,6 @@
 package com.zeyad.generic.genericrecyclerview.adapter.screens;
 
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Pair;
@@ -7,14 +8,15 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.zeyad.generic.genericrecyclerview.adapter.screens.snackbar.SnackBarFactory;
-import com.zeyad.rxredux.core.redux.BaseViewModel;
+import com.zeyad.rxredux.core.viewmodel.BaseViewModel;
 
 import java.util.List;
 
 /**
  * @author by ZIaDo on 7/21/17.
  */
-public abstract class BaseActivity<S, VM extends BaseViewModel<S>> extends com.zeyad.rxredux.core.redux.BaseActivity<S, VM> {
+public abstract class BaseActivity<S extends Parcelable, VM extends BaseViewModel<S>> extends com.zeyad
+        .rxredux.core.view.BaseActivity<S, VM> {
 
     /**
      * Adds a {@link Fragment} to this activity's layout.

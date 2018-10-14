@@ -18,15 +18,13 @@ import android.widget.ImageView;
 import com.zeyad.generic.genericrecyclerview.R;
 import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.UserListActivity;
 
-import org.parceler.Parcels;
-
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-import static com.zeyad.rxredux.core.redux.BaseActivity.UI_MODEL;
+import static com.zeyad.rxredux.core.view.BaseViewKt.UI_MODEL;
 
 /**
  * An activity representing a single Repository detail screen. This activity is only used narrow

@@ -3,19 +3,19 @@ package com.zeyad.generic.genericrecyclerview.adapter.screens.user.detail;
 
 import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.User;
 
-import org.parceler.Parcel;
-import org.parceler.Transient;
-
 import java.util.List;
+
+//import org.parceler.Parcel;
+//import org.parceler.Transient;
 
 /**
  * @author zeyad on 1/25/17.
  */
-@Parcel
+//@Parcel
 public class UserDetailState {
     boolean isTwoPane;
     User user;
-    @Transient
+    //    @Transient
     List<Repository> repos;
 
     UserDetailState() {

@@ -4,13 +4,13 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.zeyad.generic.genericrecyclerview.adapter.screens.snackbar.SnackBarFactory;
-import com.zeyad.rxredux.core.redux.BaseViewModel;
+import com.zeyad.rxredux.core.viewmodel.BaseViewModel;
 
 /**
  * @author by ZIaDo on 7/21/17.
  */
 
-public abstract class BaseFragment<S, VM extends BaseViewModel<S>> extends com.zeyad.rxredux.core.redux.BaseFragment<S, VM> {
+public abstract class BaseFragment<S, VM extends BaseViewModel<S>> extends com.zeyad.rxredux.core.view.BaseFragment<S, VM> {
 
     public void showToastMessage(String message) {
         showToastMessage(message, Toast.LENGTH_LONG);

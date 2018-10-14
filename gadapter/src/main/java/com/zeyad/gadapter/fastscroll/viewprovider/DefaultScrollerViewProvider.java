@@ -18,15 +18,15 @@ public class DefaultScrollerViewProvider extends ScrollerViewProvider {
     @Override
     public View provideHandleView(ViewGroup container) {
         handle = new View(getContext());
-        int verticalInset = getScroller().isVertical() ? 0 : getContext().getResources().getDimensionPixelSize(R.dimen.fastscroll__handle_inset);
-        int horizontalInset = !getScroller().isVertical() ? 0 : getContext().getResources().getDimensionPixelSize(R.dimen.fastscroll__handle_inset);
-        InsetDrawable handleBg = new InsetDrawable(ContextCompat.getDrawable(getContext(), R.drawable.fastscroll__default_handle), horizontalInset,
+        int verticalInset = getScroller().isVertical() ? 0 : getContext().getResources().getDimensionPixelSize(R.dimen.fastscroll_handle_inset);
+        int horizontalInset = !getScroller().isVertical() ? 0 : getContext().getResources().getDimensionPixelSize(R.dimen.fastscroll_handle_inset);
+        InsetDrawable handleBg = new InsetDrawable(ContextCompat.getDrawable(getContext(), R.drawable.fastscroll_default_handle), horizontalInset,
                 verticalInset, horizontalInset, verticalInset);
         Utils.setBackground(handle, handleBg);
         int handleWidth = getContext().getResources().getDimensionPixelSize(
-                getScroller().isVertical() ? R.dimen.fastscroll__handle_clickable_width : R.dimen.fastscroll__handle_height);
+                getScroller().isVertical() ? R.dimen.fastscroll_handle_clickable_width : R.dimen.fastscroll_handle_height);
         int handleHeight = getContext().getResources().getDimensionPixelSize(
-                getScroller().isVertical() ? R.dimen.fastscroll__handle_height : R.dimen.fastscroll__handle_clickable_width);
+                getScroller().isVertical() ? R.dimen.fastscroll_handle_height : R.dimen.fastscroll_handle_clickable_width);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(handleWidth, handleHeight);
         handle.setLayoutParams(params);
         return handle;
@@ -34,7 +34,7 @@ public class DefaultScrollerViewProvider extends ScrollerViewProvider {
 
     @Override
     public View provideBubbleView(ViewGroup container) {
-        bubble = LayoutInflater.from(getContext()).inflate(R.layout.fastscroll__default_bubble, container, false);
+        bubble = LayoutInflater.from(getContext()).inflate(R.layout.fastscroll_default_bubble, container, false);
         return bubble;
     }
 

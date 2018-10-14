@@ -1,7 +1,7 @@
 package com.zeyad.generic.genericrecyclerview.adapter.screens.user.list;
 
-import org.parceler.Parcel;
-import org.parceler.Transient;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +9,22 @@ import java.util.List;
 /**
  * @author by ZIaDo on 1/28/17.
  */
-@Parcel
-public class UserListState {
-    @Transient
+//@Parcel
+public class UserListState implements Parcelable {
+    public static final Parcelable.Creator<UserListState> CREATOR = new Parcelable.Creator<UserListState>() {
+        @Override
+        public UserListState createFromParcel(Parcel source) {
+            return new UserListState(source);
+        }
+
+        @Override
+        public UserListState[] newArray(int size) {
+            return new UserListState[size];
+        }
+    };
+    //    @Transient
     List<User> users;
-    @Transient
+    //    @Transient
     List<User> searchList;
     long lastId;
 
@@ -25,6 +36,14 @@ public class UserListState {
         users = builder.users;
         searchList = builder.searchList;
         lastId = builder.lastId;
+    }
+
+    protected UserListState(Parcel in) {
+//        this.users = new ArrayList<>();
+        in.readList(this.users, User.class.getClassLoader());
+//        this.searchList = new ArrayList<>();
+        in.readList(this.searchList, User.class.getClassLoader());
+        this.lastId = in.readLong();
     }
 
     static Builder builder() {
@@ -56,6 +75,18 @@ public class UserListState {
             return false;
         UserListState that = (UserListState) o;
         return lastId == that.lastId;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeList(this.users);
+        parcel.writeList(this.searchList);
+        parcel.writeLong(this.lastId);
     }
 
     static class Builder {

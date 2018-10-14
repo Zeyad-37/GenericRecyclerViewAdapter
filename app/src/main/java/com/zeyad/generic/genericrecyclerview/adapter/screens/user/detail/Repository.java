@@ -3,12 +3,12 @@ package com.zeyad.generic.genericrecyclerview.adapter.screens.user.detail;
 
 import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.User;
 
-import org.parceler.Parcel;
+//import org.parceler.Parcel;
 
 /**
  * @author zeyad on 1/25/17.
  */
-@Parcel
+//@Parcel
 public class Repository {//extends RealmObject {
     //    @SerializedName("id")
     int id;

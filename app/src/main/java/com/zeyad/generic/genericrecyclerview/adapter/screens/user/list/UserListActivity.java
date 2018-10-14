@@ -1,11 +1,11 @@
 package com.zeyad.generic.genericrecyclerview.adapter.screens.user.list;
 
 import android.app.SearchManager;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.util.Pair;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.zeyad.gadapter.GenericRecyclerViewAdapter;
 import com.zeyad.gadapter.ItemInfo;
@@ -29,14 +30,15 @@ import com.zeyad.gadapter.stickyheaders.StickyGridLayoutManager;
 import com.zeyad.generic.genericrecyclerview.R;
 import com.zeyad.generic.genericrecyclerview.adapter.screens.BaseActivity;
 import com.zeyad.generic.genericrecyclerview.adapter.screens.user.detail.UserDetailActivity;
+import com.zeyad.generic.genericrecyclerview.adapter.screens.user.detail.UserDetailFragment;
+import com.zeyad.generic.genericrecyclerview.adapter.screens.user.detail.UserDetailState;
 import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.events.GetPaginatedUsersEvent;
-import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.viewHolders.EmptyViewHolder;
-import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.viewHolders.SectionHeaderViewHolder;
-import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.viewHolders.UserViewHolder;
+import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.viewHolders.EmptyGenericViewHolder;
+import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.viewHolders.SectionHeaderGenericViewHolder;
+import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.viewHolders.UserGenericViewHolder;
 import com.zeyad.generic.genericrecyclerview.adapter.screens.utils.Utils;
-import com.zeyad.rxredux.core.redux.BaseEvent;
-import com.zeyad.rxredux.core.redux.ErrorMessageFactory;
-import com.zeyad.rxredux.core.redux.SuccessStateAccumulator;
+import com.zeyad.rxredux.core.BaseEvent;
+import com.zeyad.rxredux.core.view.ErrorMessageFactory;
 import com.zeyad.usecases.api.DataServiceFactory;
 
 import java.util.ArrayList;
@@ -85,12 +87,7 @@ public class UserListActivity extends BaseActivity<UserListState, UserListVM> im
 
     @Override
     public ErrorMessageFactory errorMessageFactory() {
-        return new ErrorMessageFactory() {
-            @Override
-            public String getErrorMessage(Throwable throwable) {
-                return throwable.getLocalizedMessage();
-            }
-        };
+        return Throwable::getLocalizedMessage;
     }
 
     @Override
@@ -98,7 +95,7 @@ public class UserListActivity extends BaseActivity<UserListState, UserListVM> im
         viewModel = ViewModelProviders.of(this).get(UserListVM.class);
         viewModel.init(getUserListStateSuccessStateAccumulator(), viewState, DataServiceFactory.getInstance());
         if (viewState == null) {
-            events = Single.<BaseEvent> just(new GetPaginatedUsersEvent(0))
+            events = Single.<BaseEvent>just(new GetPaginatedUsersEvent(0))
                     //                    .doOnSuccess(event -> Log.d("GetPaginatedUsersEvent", "fired!"))
                     .toObservable();
         }
@@ -127,7 +124,7 @@ public class UserListActivity extends BaseActivity<UserListState, UserListVM> im
     //    }
 
     @Override
-    public void setupUI() {
+    public void setupUI(boolean isNew) {
         setContentView(R.layout.activity_user_list);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -154,10 +151,10 @@ public class UserListActivity extends BaseActivity<UserListState, UserListVM> im
                     break;
                 case "DeleteUsersEvent":
                     users = Observable.fromIterable(users)
-                                      //                                      .filter(user -> !resultList.contains((long) user.getId()))
-                                      .distinct()
-                                      .toList()
-                                      .blockingGet();
+                            //                                      .filter(user -> !resultList.contains((long) user.getId()))
+                            .distinct()
+                            .toList()
+                            .blockingGet();
                     break;
                 default:
                     break;
@@ -177,13 +174,13 @@ public class UserListActivity extends BaseActivity<UserListState, UserListVM> im
         List<User> searchList = viewState.getSearchList();
         if (Utils.isNotEmpty(searchList)) {
             usersAdapter.animateTo(Observable.fromIterable(searchList)
-                                             .map(user -> new ItemInfo(user, R.layout.user_item_layout).setId(user.getId()))
-                                             .toList(users.size())
-                                             .blockingGet());
+                    .map(user -> new ItemInfo(user, R.layout.user_item_layout).setId(user.getId()))
+                    .toList(users.size())
+                    .blockingGet());
         } else if (Utils.isNotEmpty(users)) {
             usersAdapter.animateTo(Observable.fromIterable(users)
-                                             .map(user -> new ItemInfo(user, R.layout.user_item_layout).setId(user.getId()))
-                                             .toList(users.size()).blockingGet());
+                    .map(user -> new ItemInfo(user, R.layout.user_item_layout).setId(user.getId()))
+                    .toList(users.size()).blockingGet());
             usersAdapter.addSectionHeader(0, "1st Section");
             usersAdapter.addSectionHeader(4, "2nd Section");
         }
@@ -204,16 +201,16 @@ public class UserListActivity extends BaseActivity<UserListState, UserListVM> im
         usersAdapter = new GenericRecyclerViewAdapter(
                 (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE), new ArrayList<>()) {
             @Override
-            public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            public GenericViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 switch (viewType) {
                     case SECTION_HEADER:
-                        return new SectionHeaderViewHolder(getLayoutInflater().inflate(R.layout.section_header_layout,
+                        return new SectionHeaderGenericViewHolder(getLayoutInflater().inflate(R.layout.section_header_layout,
                                 parent, false));
                     case R.layout.empty_view:
-                        return new EmptyViewHolder(getLayoutInflater().inflate(R.layout.empty_view,
+                        return new EmptyGenericViewHolder(getLayoutInflater().inflate(R.layout.empty_view,
                                 parent, false));
                     case R.layout.user_item_layout:
-                        return new UserViewHolder(getLayoutInflater().inflate(R.layout.user_item_layout,
+                        return new UserGenericViewHolder(getLayoutInflater().inflate(R.layout.user_item_layout,
                                 parent, false));
                     default:
                         return null;
@@ -223,46 +220,46 @@ public class UserListActivity extends BaseActivity<UserListState, UserListVM> im
         //        usersAdapter.setSectionTitleProvider(i -> "Section " + (i + 1));
         usersAdapter.setAreItemsExpandable(true);
         usersAdapter.setAreItemsClickable(true);
-        //        usersAdapter.setOnItemClickListener((position, itemInfo, holder) -> {
-        //            if (actionMode != null) {
-        //                toggleSelection(position);
-        //            } else if (itemInfo.getData() instanceof User) {
-        //                User userModel = (User) itemInfo.getData();
-        //                UserDetailState userDetailState = UserDetailState.builder()
-        //                                                                 .setUser(userModel)
-        //                                                                 .setIsTwoPane(twoPane)
-        //                                                                 .build();
-        //                Pair<View, String> pair = null;
-        //                Pair<View, String> secondPair = null;
-        //                if (Utils.hasLollipop()) {
-        //                    UserViewHolder userViewHolder = (UserViewHolder) holder;
-        //                    ImageView avatar = userViewHolder.getAvatar();
-        ////                    pair = Pair.create(avatar, avatar.getTransitionName());
-        //                    TextView textViewTitle = userViewHolder.getTextViewTitle();
-        ////                    secondPair = Pair.create(textViewTitle, textViewTitle.getTransitionName());
-        //                }
-        //                if (twoPane) {
-        //                    List<Pair<View, String>> pairs = new ArrayList<>();
-        //                    pairs.add(pair);
-        //                    pairs.add(secondPair);
-        //                    if (Utils.isNotEmpty(currentFragTag)) {
-        //                        removeFragment(currentFragTag);
-        //                    }
-        //                    UserDetailFragment orderDetailFragment = UserDetailFragment.newInstance(userDetailState);
-        //                    currentFragTag = orderDetailFragment.getClass().getSimpleName() + userModel.getId();
-        //                    addFragment(R.id.user_detail_container, orderDetailFragment, currentFragTag, pairs);
-        //                } else {
-        //                    if (Utils.hasLollipop()) {
-        //                        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this,
-        //                                pair, secondPair);
-        //                        navigator.navigateTo(this, UserDetailActivity.getCallingIntent(this,
-        //                                userDetailState), options);
-        //                    } else {
-        //                        navigator.navigateTo(this, UserDetailActivity.getCallingIntent(this, userDetailState));
-        //                    }
-        //                }
-        //            }
-        //        });
+        usersAdapter.setOnItemClickListener((position, itemInfo, holder) -> {
+            if (actionMode != null) {
+                toggleSelection(position);
+            } else if (itemInfo.getData() instanceof User) {
+                User userModel = itemInfo.getData();
+                UserDetailState userDetailState = UserDetailState.builder()
+                        .setUser(userModel)
+                        .setIsTwoPane(twoPane)
+                        .build();
+                Pair<View, String> pair = null;
+                Pair<View, String> secondPair = null;
+                if (Utils.hasLollipop()) {
+                    UserGenericViewHolder userViewHolder = (UserGenericViewHolder) holder;
+                    ImageView avatar = userViewHolder.getAvatar();
+                    //                    pair = Pair.create(avatar, avatar.getTransitionName());
+                    TextView textViewTitle = userViewHolder.getTextViewTitle();
+                    //                    secondPair = Pair.create(textViewTitle, textViewTitle.getTransitionName());
+                }
+                if (twoPane) {
+                    List<Pair<View, String>> pairs = new ArrayList<>();
+                    pairs.add(pair);
+                    pairs.add(secondPair);
+                    if (Utils.isNotEmpty(currentFragTag)) {
+                        removeFragment(currentFragTag);
+                    }
+                    UserDetailFragment orderDetailFragment = UserDetailFragment.newInstance(userDetailState);
+                    currentFragTag = orderDetailFragment.getClass().getSimpleName() + userModel.getId();
+//                    addFragment(R.id.user_detail_container, orderDetailFragment, currentFragTag, pairs);
+                } else {
+                    if (Utils.hasLollipop()) {
+//                        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this,
+//                                pair, secondPair);
+//                        navigator.navigateTo(this, UserDetailActivity.getCallingIntent(this,
+//                                userDetailState), options);
+                    } else {
+                        navigator.navigateTo(this, UserDetailActivity.getCallingIntent(this, userDetailState));
+                    }
+                }
+            }
+        });
         //        usersAdapter.setOnItemLongClickListener((position, itemInfo, holder) -> {
         //                    if (usersAdapter.isSelectionAllowed()) {
         //                        actionMode = startSupportActionMode(UserListActivity.this);

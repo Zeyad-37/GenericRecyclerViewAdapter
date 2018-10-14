@@ -5,7 +5,6 @@ import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.events.Ge
 import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.events.SearchUsersEvent;
 import com.zeyad.rxredux.core.redux.BaseEvent;
 import com.zeyad.rxredux.core.redux.BaseViewModel;
-import com.zeyad.rxredux.core.redux.SuccessStateAccumulator;
 import com.zeyad.usecases.api.IDataService;
 import com.zeyad.usecases.requests.GetRequest;
 
@@ -36,7 +35,7 @@ public class UserListVM extends BaseViewModel<UserListState> {
     public Function<BaseEvent, Flowable<?>> mapEventsToExecutables() {
         return new Function<BaseEvent, Flowable<?>>() {
             @Override
-            public Flowable<?> apply(@NonNull BaseEvent event) throws Exception {
+            public Flowable<?> apply(@NonNull BaseEvent event) {
                 Flowable executable = Flowable.empty();
                 if (event instanceof GetPaginatedUsersEvent) {
                     executable = getUsers(((GetPaginatedUsersEvent) event).getLastId());

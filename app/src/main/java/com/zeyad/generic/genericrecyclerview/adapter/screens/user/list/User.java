@@ -1,11 +1,9 @@
 package com.zeyad.generic.genericrecyclerview.adapter.screens.user.list;
 
-import org.parceler.Parcel;
-
 /**
  * @author zeyad on 1/10/17.
  */
-@Parcel
+//@Parcel
 public class User {//extends RealmObject {
 
     static final String LOGIN = "login";

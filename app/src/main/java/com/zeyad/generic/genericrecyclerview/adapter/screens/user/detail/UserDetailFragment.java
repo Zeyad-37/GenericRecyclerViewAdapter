@@ -1,6 +1,5 @@
 package com.zeyad.generic.genericrecyclerview.adapter.screens.user.detail;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -8,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,9 +17,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.zeyad.gadapter.GenericRecyclerViewAdapter;
 import com.zeyad.gadapter.ItemInfo;
 import com.zeyad.generic.genericrecyclerview.R;
@@ -29,10 +24,10 @@ import com.zeyad.generic.genericrecyclerview.adapter.screens.BaseFragment;
 import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.User;
 import com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.UserListActivity;
 import com.zeyad.generic.genericrecyclerview.adapter.screens.utils.Utils;
-import com.zeyad.rxredux.core.redux.ErrorMessageFactory;
-import com.zeyad.rxredux.core.redux.SuccessStateAccumulator;
+import com.zeyad.rxredux.core.BaseEvent;
+import com.zeyad.rxredux.core.view.ErrorMessageFactory;
 
-import org.parceler.Parcels;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -40,7 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 
-import static com.zeyad.rxredux.core.redux.BaseActivity.UI_MODEL;
+import static com.zeyad.rxredux.core.view.BaseViewKt.UI_MODEL;
 
 /**
  * A fragment representing a single Repository detail screen. This fragment is either contained in a
@@ -78,39 +73,34 @@ public class UserDetailFragment extends BaseFragment<UserDetailState, UserDetail
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setSharedElementEnterTransition(
                     TransitionInflater.from(getContext())
-                                      .inflateTransition(android.R.transition.move));
+                            .inflateTransition(android.R.transition.move));
         }
         //        setSharedElementReturnTransition(null); // supply the correct element for return transition
     }
 
     @Override
     public ErrorMessageFactory errorMessageFactory() {
-        return new ErrorMessageFactory() {
-            @Override
-            public String getErrorMessage(Throwable throwable) {
-                return throwable.getLocalizedMessage();
-            }
-        };
+        return (throwable, baseEvent) -> throwable.getLocalizedMessage();
     }
 
     @Override
     public void initialize() {
+        viewModel = ViewModelProviders.of(this).get(UserDetailVM.class);
+        //        events = Observable.just(new GetReposEvent(viewState.getUser().getLogin()));
+    }
+
+    @NotNull
+    @Override
+    public UserDetailState initialState() {
         Bundle arguments = getArguments();
         if (arguments != null) {
-            viewState = Parcels.unwrap(arguments.getParcelable(UI_MODEL));
-        }
-        viewModel = ViewModelProviders.of(this).get(UserDetailVM.class);
-        viewModel.init(new SuccessStateAccumulator<UserDetailState>() {
-            @Override
-            public UserDetailState accumulateSuccessStates(Object newResult, String s, UserDetailState currentStateBundle) {
-                return UserDetailState.builder()
-                                      .setRepos((List<Repository>) newResult)
-                                      .setUser(currentStateBundle.getUser())
-                                      .setIsTwoPane(currentStateBundle.isTwoPane())
-                                      .build();
-            }
-        }, viewState);
-        //        events = Observable.just(new GetReposEvent(viewState.getUser().getLogin()));
+            return Parcels.unwrap(arguments.getParcelable(UI_MODEL));
+        } else null;
+    }
+
+    @Override
+    public Observable<BaseEvent> events() {
+        return null;
     }
 
     @Override
@@ -127,8 +117,8 @@ public class UserDetailFragment extends BaseFragment<UserDetailState, UserDetail
         repositoriesAdapter = new GenericRecyclerViewAdapter((LayoutInflater)
                 getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)) {
             @Override
-            public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                return new RepositoryViewHolder(getLayoutInflater().inflate(viewType, parent, false));
+            public GenericViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                return new RepositoryGenericViewHolder(getLayoutInflater().inflate(viewType, parent, false));
             }
         };
         recyclerViewRepositories.setAdapter(repositoriesAdapter);
@@ -136,49 +126,25 @@ public class UserDetailFragment extends BaseFragment<UserDetailState, UserDetail
 
     @Override
     public void renderSuccessState(UserDetailState userDetailState) {
-        viewState = userDetailState;
-        User user = viewState.getUser();
-        List<Repository> repoModels = viewState.getRepos();
+        User user = userDetailState.getUser();
+        List<Repository> repoModels = userDetailState.getRepos();
         if (Utils.isNotEmpty(repoModels)) {
             repositoriesAdapter.animateTo(Observable.fromIterable(repoModels)
-                                                    .map(repository -> new ItemInfo(repository, R.layout.repo_item_layout))
-                                                    .toList(repoModels.size()).blockingGet());
+                    .map(repository -> new ItemInfo(repository, R.layout.repo_item_layout))
+                    .toList(repoModels.size()).blockingGet());
         }
         if (user != null) {
-            RequestListener<String, GlideDrawable> requestListener = new RequestListener<String, GlideDrawable>() {
-                @Override
-                public boolean onException(Exception e, String model, Target<GlideDrawable> target,
-                        boolean isFirstResource) {
-                    FragmentActivity activity = getActivity();
-                    if (activity != null) {
-                        activity.supportStartPostponedEnterTransition();
-                    }
-                    return false;
-                }
-
-                @Override
-                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target,
-                        boolean isFromMemoryCache, boolean isFirstResource) {
-                    FragmentActivity activity = getActivity();
-                    if (activity != null) {
-                        activity.supportStartPostponedEnterTransition();
-                    }
-                    return false;
-                }
-            };
             if (userDetailState.isTwoPane()) {
                 UserListActivity activity = (UserListActivity) getActivity();
                 if (activity != null) {
-                    Toolbar appBarLayout = (Toolbar) activity.findViewById(R.id.toolbar);
+                    Toolbar appBarLayout = activity.findViewById(R.id.toolbar);
                     if (appBarLayout != null) {
                         appBarLayout.setTitle(user.getLogin());
                     }
                     if (Utils.isNotEmpty(user.getAvatarUrl())) {
-                        Glide.with(getContext())
-                             .load(user.getAvatarUrl())
-                             .dontAnimate()
-                             .listener(requestListener)
-                             .into(activity.imageViewAvatar);
+                        Glide.with(requireContext())
+                                .load(user.getAvatarUrl())
+                                .into(activity.imageViewAvatar);
                     }
                 }
             } else {
@@ -189,11 +155,9 @@ public class UserDetailFragment extends BaseFragment<UserDetailState, UserDetail
                         appBarLayout.setTitle(user.getLogin());
                     }
                     if (Utils.isNotEmpty(user.getAvatarUrl())) {
-                        Glide.with(getContext())
-                             .load(user.getAvatarUrl())
-                             .dontAnimate()
-                             .listener(requestListener)
-                             .into(activity.imageViewAvatar);
+                        Glide.with(requireContext())
+                                .load(user.getAvatarUrl())
+                                .into(activity.imageViewAvatar);
                     }
                 }
             }
@@ -202,14 +166,14 @@ public class UserDetailFragment extends BaseFragment<UserDetailState, UserDetail
     }
 
     @Override
-    public void toggleViews(boolean toggle) {
-        loaderLayout.bringToFront();
-        loaderLayout.setVisibility(toggle ? View.VISIBLE : View.GONE);
+    public void showError(@NotNull String message, @NotNull BaseEvent<?> baseEvent) {
+        showErrorSnackBar(message, loaderLayout, Snackbar.LENGTH_LONG);
     }
 
     @Override
-    public void showError(String message) {
-        showErrorSnackBar(message, loaderLayout, Snackbar.LENGTH_LONG);
+    public void toggleViews(boolean toggle, @NotNull BaseEvent<?> baseEvent) {
+        loaderLayout.bringToFront();
+        loaderLayout.setVisibility(toggle ? View.VISIBLE : View.GONE);
     }
 
     private void applyPalette() {
