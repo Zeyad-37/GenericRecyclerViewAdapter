@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GenericRecyclerView.iml" filepath="$PROJECT_DIR$/GenericRecyclerView.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/GenericRecyclerViewAdapter.iml" filepath="$PROJECT_DIR$/.idea/GenericRecyclerViewAdapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gadapter/gadapter.iml" filepath="$PROJECT_DIR$/gadapter/gadapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/gadapter/gadapter.iml" filepath="$PROJECT_DIR$/gadapter/gadapter.iml" />
     </modules>
   </component>

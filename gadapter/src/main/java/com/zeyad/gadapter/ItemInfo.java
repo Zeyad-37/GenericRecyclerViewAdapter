@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
  * @author by zeyad on 20/05/16.
  */
 public class ItemInfo {
-    public static final int HEADER = 1, FOOTER = 2, LOADING = 3, SECTION_HEADER = 4;
+    public static final int SECTION_HEADER = 1;
     private final int layoutId;
     private Object data;
     private long id;

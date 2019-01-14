@@ -1,9 +1,7 @@
 package com.zeyad.gadapter;
 
-import android.content.Context;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.ArraySet;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,16 +15,12 @@ import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
-import static android.os.Build.VERSION_CODES.M;
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
 import static com.zeyad.gadapter.ItemInfo.SECTION_HEADER;
 
@@ -45,15 +39,9 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
     private OnSwipeListener onSwipeListener;
     private SectionTitleProvider sectionTitleProvider;
     private ArrayList<Integer> expandedPositions;
-    private boolean isLoadingFooterAdded;
-    private boolean hasHeader;
-    private boolean hasFooter;
     private boolean allowSelection;
     private boolean areItemsExpandable;
     private boolean areItemsClickable;
-    private int mInitialElevation;
-    private int mFinalElevation;
-    private int mScrollFinalPosition;
 
     public GenericRecyclerViewAdapter(LayoutInflater layoutInflater) {
         this.layoutInflater = layoutInflater;
@@ -80,7 +68,7 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         final ItemInfo itemInfo = dataList.get(position);
         holder.bindData(itemInfo.getData(), selectedItems.get(position, false), position,
                 itemInfo.isEnabled());
-        if (areItemsClickable && !(isHeader(position) || isFooter(position) || isSectionHeader(position))) {
+        if (areItemsClickable && !isSectionHeader(position)) {
             if (onItemClickListener != null) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -119,9 +107,6 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
                     } else {
                         expandedPositions.add(adapterPosition);
                     }
-                    //                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    //                        TransitionManager.beginDelayedTransition((ViewGroup) holder.itemView.getParent());
-                    //                    }
                     notifyItemChanged(adapterPosition);
                 }
             });
@@ -180,10 +165,6 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
     public ItemInfo getLastItem() {
         return dataList.get(dataList.size() - 1);
     }
-
-//    public int getPureSize() {
-//        return getPureDataList().size();
-//    }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
@@ -245,55 +226,6 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         notifyItemChanged(index);
     }
 
-    public boolean hasHeader() {
-        return hasHeader;
-    }
-
-    public void setHasHeader(boolean hasHeader, String label) {
-        if (!this.hasHeader && hasHeader) {
-            this.hasHeader = true;
-            dataList.add(0, new ItemInfo(label, ItemInfo.HEADER).setId(ItemInfo.HEADER));
-            notifyDataSetChanged();
-        }
-    }
-
-    public boolean hasFooter() {
-        return hasFooter;
-    }
-
-    public void setHasFooter(boolean hasFooter, String label) {
-        if (!this.hasFooter && hasFooter) {
-            this.hasFooter = true;
-            int position;
-            position = dataList.size();
-            dataList.add(position, new ItemInfo(label, ItemInfo.FOOTER).setId(ItemInfo.FOOTER));
-            notifyItemInserted(position);
-        }
-    }
-
-    public void addLoading() {
-        isLoadingFooterAdded = true;
-        if (!dataList.isEmpty()) {
-            int index = dataList.size() - 1;
-            dataList.add(index, new ItemInfo(null, ItemInfo.LOADING).setId(ItemInfo.LOADING));
-            notifyItemInserted(index);
-        }
-    }
-
-    public void removeLoading() {
-        isLoadingFooterAdded = false;
-        if (!dataList.isEmpty()) {
-            ItemInfo itemInfo;
-            for (int i = 0; i < dataList.size(); i++) {
-                itemInfo = dataList.get(i);
-                if (itemInfo.getId() == ItemInfo.LOADING) {
-                    dataList.remove(i);
-                    notifyItemRemoved(i);
-                }
-            }
-        }
-    }
-
     public boolean isSelectionAllowed() {
         return allowSelection;
     }
@@ -318,130 +250,12 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         this.areItemsExpandable = areItemsExpandable;
     }
 
-//    /**
-//     * Clears data from the dataList without removing the header, footer and loading views!
-//     */
-//    public void clearPureItemList() {
-//        int startIndex = 0;
-//        int endIndex = 0;
-//        if (hasHeader()) {
-//            startIndex = 1;
-//        }
-//        if (hasFooter()) {
-//            endIndex++;
-//        }
-//        if (isLoadingFooterAdded) {
-//            endIndex++;
-//        }
-//        for (int i = startIndex; i < dataList.size() - endIndex; i++) {
-//            removeItem(i);
-//        }
-//    }
-
-    /**
-     * Clears data from the dataList.
-     */
-    public void clearItemList() {
-        dataList.clear();
-        notifyDataSetChanged();
-    }
-
-    @Deprecated
-    public void appendWithoutDuplicateIds(List<ItemInfo> itemInfoList) {
-        validateList(itemInfoList);
-        if (android.os.Build.VERSION.SDK_INT >= M) {
-            ArraySet<ItemInfo> arraySet = new ArraySet<>();
-            arraySet.addAll(itemInfoList);
-            itemInfoList.clear();
-            itemInfoList.addAll(arraySet);
-        } else {
-            Set<ItemInfo> set = new HashSet<>(itemInfoList);
-            itemInfoList.clear();
-            itemInfoList.addAll(set);
-        }
-        ItemInfo item;
-        for (int i = 0, size = itemInfoList.size(); i < size; i++) {
-            item = dataList.get(i);
-            if (dataList.contains(item)) {
-                replaceItem(i, item);
-            } else {
-                addItem(i, item);
-            }
-        }
-    }
-
-    @Deprecated
-    public void appendList(List<ItemInfo> dataSet) {
-        validateList(dataSet);
-        dataList.addAll(dataSet);
-        notifyItemRangeInserted(getItemCount(), dataList.size());
-    }
-
-    @Deprecated
-    public void appendList(int position, List<ItemInfo> dataSet) {
-        validateList(dataSet);
-        dataList.addAll(position, dataSet);
-        notifyItemRangeInserted(position, dataList.size());
-    }
-
     public boolean isSectionHeader(int index) {
         return dataList.get(index).getId() == SECTION_HEADER || dataList.get(index).getLayoutId() == SECTION_HEADER;
     }
 
-    public boolean isFooter(int index) {
-        return dataList.get(index).getId() == ItemInfo.FOOTER || dataList.get(index).getLayoutId() == ItemInfo.FOOTER;
-    }
-
-    public boolean isHeader(int index) {
-        return dataList.get(index).getId() == ItemInfo.HEADER || dataList.get(index).getLayoutId() == ItemInfo.HEADER;
-    }
-
-    public boolean isLoading(int index) {
-        return dataList.get(index).getId() == ItemInfo.LOADING || dataList.get(index).getLayoutId() == ItemInfo.LOADING;
-    }
-
-    @Deprecated
-    public void addSectionHeader(int index, String title) {
-        addItem(index, new ItemInfo(title, SECTION_HEADER).setId(SECTION_HEADER));
-    }
-
-    @Deprecated
-    public void addSectionHeaderWithId(int index, String title, long id) {
-        addItem(index, new ItemInfo(title, SECTION_HEADER).setId(id));
-    }
-
-    @Deprecated
-    public void removeSectionHeader(int index) throws IllegalAccessException {
-        if (dataList.get(index).getLayoutId() == SECTION_HEADER) {
-            removeItem(index);
-        } else {
-            throw new IllegalAccessException("item at given index is not a section header!");
-        }
-    }
-
-//    public List<ItemInfo> getPureDataList() {
-//        List<ItemInfo> pureSet = new ArrayList<>();
-//        pureSet.addAll(dataList);
-//        ItemInfo item;
-//        for (int i = 0; i < pureSet.size(); i++) {
-//            item = pureSet.get(i);
-//            if (item.getId() == SECTION_HEADER
-//                    || item.getId() == ItemInfo.FOOTER
-//                    || item.getId() == ItemInfo.HEADER
-//                    || item.getId() == ItemInfo.LOADING) {
-//                pureSet.remove(item);
-//            }
-//        }
-//        return pureSet;
-//    }
-
     public List<ItemInfo> getDataList() {
         return dataList;
-    }
-
-    public void setDataList(List<ItemInfo> dataList) {
-        validateList(dataList);
-        this.dataList = dataList;
     }
 
     public void setDataList(List<ItemInfo> dataList, DiffUtil.DiffResult diffResult) {
@@ -463,7 +277,7 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         return dataFlowable.subscribe(new Consumer<List<ItemInfo>>() {
             @Override
             public void accept(List<ItemInfo> dataSet) {
-                animateTo(dataSet);
+                setDataList(dataSet, null);
             }
         });
     }
@@ -606,145 +420,10 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         return bundles;
     }
 
-    @Deprecated
-    public void removeItems(List<Integer> positions) {
-        // Reverse-sort the list
-        Collections.sort(positions, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer lhs, Integer rhs) {
-                return lhs - rhs;
-            }
-        });
-        // Split the list in ranges
-        while (!positions.isEmpty()) {
-            if (positions.size() == 1) {
-                removeItem(positions.get(0));
-                positions.remove(0);
-            } else {
-                int count = 1;
-                while (positions.size() > count
-                        && positions.get(count).equals(positions.get(count - 1) - 1)) {
-                    ++count;
-                }
-                if (count == 1) {
-                    removeItem(positions.get(0));
-                } else {
-                    removeRange(positions.get(count - 1), count);
-                }
-                for (int i = 0; i < count; ++i) {
-                    positions.remove(0);
-                }
-            }
-        }
-    }
-
-    //-----------------animations--------------------------//
-
     private void validateList(List<ItemInfo> dataList) {
         if (dataList == null) {
             throw new IllegalArgumentException("The list cannot be null");
         }
-    }
-
-    private void removeRange(int positionStart, int itemCount) {
-        for (int i = 0; i < itemCount; ++i) {
-            dataList.remove(positionStart);
-        }
-        notifyItemRangeRemoved(positionStart, itemCount);
-    }
-
-    @Deprecated
-    public void animateTo(List<ItemInfo> models) {
-        validateList(models);
-        applyAndAnimateRemovals(models);
-        applyAndAnimateAdditions(models);
-        applyAndAnimateMovedItems(models);
-        dataList = models;
-    }
-
-    @Deprecated
-    public void reloadData(List<ItemInfo> newModels) {
-        for (ItemInfo item : dataList) {
-            if (newModels.contains(item)) {
-                newModels.remove(item);
-            }
-        }
-        appendList(newModels);
-    }
-
-    @Deprecated
-    public void removeItemById(Long id) {
-        for (ItemInfo item : dataList) {
-            if (item.getId() == id) {
-                removeItem(dataList.indexOf(item));
-            }
-        }
-    }
-
-    @Deprecated
-    public void removeItemsById(List<Long> ids) {
-        List<ItemInfo> newList = new ArrayList<>(dataList.size() - ids.size());
-        for (ItemInfo item : dataList) {
-            if (!ids.contains(item.getId())) {
-                newList.add(item);
-            }
-        }
-        animateTo(newList);
-    }
-
-    private void onScroll(int position) {
-        // shadow shall not increase if current position
-        // is higher than scroll's final position
-        if (position <= mScrollFinalPosition) {
-//            setCardElevation(calculateElevation(position));
-        } else {
-            // thread below fixes issue #1, avoiding elevation
-            // setting problems when fast scrolling
-            final int mPositionBackup = position;
-            position = mScrollFinalPosition;
-            final int properElevation = calculateElevation(position);
-            position = mPositionBackup;
-//            if (getCardElevation() != properElevation) {
-//                setCardElevation(properElevation);
-//            }
-        }
-    }
-
-    /**
-     * @param value The percentage of the screen's height that is
-     *              going to be scrolled to reach the final elevation
-     * @return Own object
-     */
-    public void setScrollFinalPosition(final int value) {
-        final int screenHeight = getContext().getResources().getDisplayMetrics().heightPixels;
-        mScrollFinalPosition = dp2px((int) (screenHeight * (value / 100.0)));
-    }
-
-    /**
-     * <pre>
-     *     author: Blankj
-     *     blog  : http://blankj.com
-     *     time  : 2016/08/13
-     *     desc  : 转换相关工具类
-     * </pre>
-     * <p>
-     * Method got from:
-     * https://github.com/Blankj/AndroidUtilCode/blob/master/utilcode/src/main/java/com/blankj/utilcode/util/ConvertUtils.java
-     */
-    private int dp2px(final int dpValue) {
-        final float scale = getContext().getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
-    }
-
-    private int calculateElevation(int position) {
-        // getting back to rule of three:
-        // mFinalElevation (px) = mScrollFinalPosition (px)
-        // newElevation    (px) = position            (px)
-        int newElevation = (mFinalElevation * position) / mScrollFinalPosition;
-        // avoid values under minimum value
-        if (newElevation < mInitialElevation)
-            newElevation = mInitialElevation;
-        return newElevation;
     }
 
     @Deprecated
@@ -755,68 +434,12 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
     }
 
     @Deprecated
-    private void replaceItem(int position, ItemInfo itemInfo) {
-        dataList.set(position, itemInfo);
-        notifyItemChanged(position, itemInfo);
-    }
-
-    @Deprecated
-    private void addItem(int position, ItemInfo model) {
-        dataList.add(position, model);
-        notifyItemInserted(position);
-        notifyItemChanged(position, dataList.size());
-    }
-
-    @Deprecated
-    private void appendItem(ItemInfo model) {
-        addItem(getItemCount(), model);
-    }
-
-    @Deprecated
     private void moveItem(int fromPosition, int toPosition) {
         Collections.swap(dataList, fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    private void applyAndAnimateRemovals(List<ItemInfo> newModels) {
-        ItemInfo model;
-        for (int i = dataList.size() - 1; i >= 0; i--) {
-            model = dataList.get(i);
-            if (!newModels.contains(model)) {
-                removeItem(i);
-            }
-        }
-    }
-
-    private void applyAndAnimateAdditions(List<ItemInfo> newModels) {
-        ItemInfo model;
-        int count = newModels.size();
-        for (int i = 0; i < count; i++) {
-            model = newModels.get(i);
-            if (!dataList.contains(model)) {
-                addItem(i, model);
-            }
-        }
-    }
-
-    private void applyAndAnimateMovedItems(List<ItemInfo> newModels) {
-        ItemInfo model;
-        int fromPosition;
-        for (int toPosition = newModels.size() - 1; toPosition >= 0; toPosition--) {
-            model = newModels.get(toPosition);
-            fromPosition = dataList.indexOf(model);
-            if (fromPosition >= 0 && fromPosition != toPosition) {
-                moveItem(fromPosition, toPosition);
-            }
-        }
-    }
-
     public LayoutInflater getLayoutInflater() {
         return layoutInflater;
     }
-
-    private Context getContext() {
-        return layoutInflater.getContext();
-    }
-
 }
