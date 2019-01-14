@@ -1,7 +1,9 @@
 package com.zeyad.gadapter.Observables;
 
 import com.zeyad.gadapter.GenericRecyclerViewAdapter;
+import com.zeyad.gadapter.GenericViewHolder;
 import com.zeyad.gadapter.ItemInfo;
+import com.zeyad.gadapter.OnItemClickListener;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -27,12 +29,12 @@ public final class ItemClickObservable extends Observable<ClickEvent> {
     }
 
     final class Listener extends MainThreadDisposable {
-        private final GenericRecyclerViewAdapter.OnItemClickListener onItemClickListener;
+        private final OnItemClickListener onItemClickListener;
 
         Listener(final Observer<? super ClickEvent> observer) {
-            this.onItemClickListener = new GenericRecyclerViewAdapter.OnItemClickListener() {
+            this.onItemClickListener = new OnItemClickListener() {
                 @Override
-                public void onItemClicked(int position, ItemInfo itemInfo, GenericRecyclerViewAdapter.GenericViewHolder holder) {
+                public void onItemClicked(int position, ItemInfo itemInfo, GenericViewHolder holder) {
                     if (!isDisposed()) {
                         observer.onNext(new ClickEvent(position, itemInfo, holder));
                     }

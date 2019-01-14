@@ -1,7 +1,6 @@
 package com.zeyad.gadapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.ArraySet;
@@ -26,9 +25,6 @@ import java.util.Set;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
-import rx.Observable;
-import rx.Subscription;
-import rx.functions.Action1;
 
 import static android.os.Build.VERSION_CODES.M;
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
@@ -37,8 +33,7 @@ import static com.zeyad.gadapter.ItemInfo.SECTION_HEADER;
 /**
  * @author by zeyad on 19/05/16.
  */
-public abstract class GenericRecyclerViewAdapter
-        extends RecyclerView.Adapter<GenericRecyclerViewAdapter.GenericViewHolder>
+public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<GenericViewHolder>
         implements ItemTouchHelperAdapter, StickyHeaderHandler {
 
     private static final String SELECTION_DISABLED = "Selection mode is disabled!";
@@ -474,22 +469,6 @@ public abstract class GenericRecyclerViewAdapter
     }
 
     /**
-     * Using a {@link Observable} as a data source to push changes while returning {@link Subscription} for the calling component to handle the life
-     * cycle.
-     *
-     * @param dataObservable data source
-     * @return {@link Subscription}
-     */
-    public Subscription setDataObservable(Observable<List<ItemInfo>> dataObservable) {
-        return dataObservable.subscribe(new Action1<List<ItemInfo>>() {
-            @Override
-            public void call(List<ItemInfo> dataSet) {
-                animateTo(dataSet);
-            }
-        });
-    }
-
-    /**
      * Indicates if the item at position position is selected
      *
      * @param position Position of the item to check
@@ -840,41 +819,4 @@ public abstract class GenericRecyclerViewAdapter
         return layoutInflater.getContext();
     }
 
-    public interface OnItemClickListener {
-        void onItemClicked(int position, ItemInfo itemInfo, GenericViewHolder holder);
-    }
-
-    public interface OnItemLongClickListener {
-        boolean onItemLongClicked(int position, ItemInfo itemInfo, GenericViewHolder holder);
-    }
-
-    public interface OnSwipeListener {
-
-        /**
-         * Called when a view is requested a swipe.
-         *
-         * @param itemInfo The {@link ItemInfo} of the view to swipe.
-         */
-        void onItemSwipe(ItemInfo itemInfo);
-    }
-
-    public interface OnExpandListener {
-
-        /**
-         * Called when a view is requested an expand.
-         *
-         * @param isExpanded a boolean to indicate whether to expand or collapse.
-         */
-        void expand(boolean isExpanded);
-    }
-
-    public abstract static class GenericViewHolder<T> extends RecyclerView.ViewHolder {
-
-        public GenericViewHolder(View itemView) {
-            super(itemView);
-        }
-
-        public abstract void bindData(
-                @NonNull T data, boolean itemSelected, int position, boolean isEnabled);
-    }
 }

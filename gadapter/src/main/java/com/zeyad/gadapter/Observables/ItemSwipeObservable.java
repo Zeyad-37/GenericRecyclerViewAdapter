@@ -2,6 +2,7 @@ package com.zeyad.gadapter.Observables;
 
 import com.zeyad.gadapter.GenericRecyclerViewAdapter;
 import com.zeyad.gadapter.ItemInfo;
+import com.zeyad.gadapter.OnSwipeListener;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -27,10 +28,10 @@ public final class ItemSwipeObservable extends Observable<ItemInfo> {
     }
 
     final class Listener extends MainThreadDisposable {
-        private final GenericRecyclerViewAdapter.OnSwipeListener onSwipeListener;
+        private final OnSwipeListener onSwipeListener;
 
         Listener(final Observer<? super ItemInfo> observer) {
-            this.onSwipeListener = new GenericRecyclerViewAdapter.OnSwipeListener() {
+            this.onSwipeListener = new OnSwipeListener() {
                 @Override
                 public void onItemSwipe(ItemInfo itemInfo) {
                     if (!isDisposed()) {

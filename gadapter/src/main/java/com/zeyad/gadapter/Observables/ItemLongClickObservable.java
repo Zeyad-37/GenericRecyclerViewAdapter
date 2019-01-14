@@ -1,7 +1,9 @@
 package com.zeyad.gadapter.Observables;
 
 import com.zeyad.gadapter.GenericRecyclerViewAdapter;
+import com.zeyad.gadapter.GenericViewHolder;
 import com.zeyad.gadapter.ItemInfo;
+import com.zeyad.gadapter.OnItemLongClickListener;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -27,12 +29,12 @@ public final class ItemLongClickObservable extends Observable<ClickEvent> {
     }
 
     final class Listener extends MainThreadDisposable {
-        private final GenericRecyclerViewAdapter.OnItemLongClickListener onItemLongClickListener;
+        private final OnItemLongClickListener onItemLongClickListener;
 
         Listener(final Observer<? super ClickEvent> observer) {
-            this.onItemLongClickListener = new GenericRecyclerViewAdapter.OnItemLongClickListener() {
+            this.onItemLongClickListener = new OnItemLongClickListener() {
                 @Override
-                public boolean onItemLongClicked(int position, ItemInfo itemInfo, GenericRecyclerViewAdapter.GenericViewHolder holder) {
+                public boolean onItemLongClicked(int position, ItemInfo itemInfo, GenericViewHolder holder) {
                     if (!isDisposed()) {
                         observer.onNext(new ClickEvent(position, itemInfo, holder));
                     }
