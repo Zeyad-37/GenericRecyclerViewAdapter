@@ -1,20 +1,9 @@
 package com.zeyad.gadapter
 
-data class ItemInfo(private var data: Any,
+data class ItemInfo(private val data: Any,
                     val layoutId: Int,
-                    private var id: Long = 0,
-                    private var isEnabled: Boolean = true) {
-
-
-    fun setId(id: Long): ItemInfo {
-        this.id = id
-        return this
-    }
-
-    fun setEnabled(enabled: Boolean): ItemInfo {
-        isEnabled = enabled
-        return this
-    }
+                    val id: Long = 0,
+                    var isEnabled: Boolean = true) {
 
     fun <T> getData(): T {
         return data as T
