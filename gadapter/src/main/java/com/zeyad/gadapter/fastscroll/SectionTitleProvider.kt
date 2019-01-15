@@ -1,6 +1,6 @@
-package com.zeyad.gadapter.fastscroll;
+package com.zeyad.gadapter.fastscroll
 
-public interface SectionTitleProvider {
+interface SectionTitleProvider {
 
     /**
      * Should be implemented by the adapter of the RecyclerView.
@@ -12,5 +12,5 @@ public interface SectionTitleProvider {
      *
      * @return The text to be shown in the bubble
      */
-    String getSectionTitle(int position);
+    fun getSectionTitle(position: Int): String
 }
