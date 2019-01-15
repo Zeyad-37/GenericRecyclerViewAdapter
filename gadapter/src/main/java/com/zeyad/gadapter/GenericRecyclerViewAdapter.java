@@ -7,9 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.zeyad.gadapter.Observables.ItemClickObservable;
-import com.zeyad.gadapter.Observables.ItemLongClickObservable;
-import com.zeyad.gadapter.Observables.ItemSwipeObservable;
+import com.zeyad.gadapter.observables.ItemClickObservable;
+import com.zeyad.gadapter.observables.ItemLongClickObservable;
+import com.zeyad.gadapter.observables.ItemSwipeObservable;
 import com.zeyad.gadapter.fastscroll.SectionTitleProvider;
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler;
 
@@ -278,6 +278,11 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
             @Override
             public void accept(List<ItemInfo> dataSet) {
                 setDataList(dataSet, null);
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) {
+                throwable.printStackTrace();
             }
         });
     }
