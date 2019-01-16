@@ -5,7 +5,7 @@ import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable
 
-class ItemLongClickObservable(private val genericRecyclerViewAdapter: GenericRecyclerViewAdapter) : Observable<ClickEvent>() {
+class ItemLongClickObservable(private val genericRecyclerViewAdapter: GenericAdapter) : Observable<ClickEvent>() {
 
     override fun subscribeActual(observer: Observer<in ClickEvent>) {
         if (!observer.checkMainThread()) {

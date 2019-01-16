@@ -1,8 +1,9 @@
 package com.zeyad.gadapter;
 
 import android.support.annotation.NonNull;
+import android.support.v7.recyclerview.extensions.AsyncDifferConfig;
+import android.support.v7.recyclerview.extensions.ListAdapter;
 import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -14,24 +15,23 @@ import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-
-public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<GenericViewHolder>
+public abstract class GenericListAdapter extends ListAdapter<ItemInfo, GenericViewHolder>
         implements ItemTouchHelperAdapter, StickyHeaderHandler {
 
     private final GenericAdapter genericAdapter;
 
-    public GenericRecyclerViewAdapter(LayoutInflater layoutInflater) {
+    protected GenericListAdapter(@NonNull DiffUtil.ItemCallback<ItemInfo> diffCallback, LayoutInflater layoutInflater) {
+        super(diffCallback);
+        genericAdapter = new GenericAdapter(layoutInflater, this);
+
+    }
+
+    protected GenericListAdapter(@NonNull AsyncDifferConfig<ItemInfo> config, LayoutInflater layoutInflater) {
+        super(config);
         genericAdapter = new GenericAdapter(layoutInflater, this);
     }
 
-    public GenericRecyclerViewAdapter(LayoutInflater layoutInflater, List<ItemInfo> list) {
-        validateList(list);
-        genericAdapter = new GenericAdapter(layoutInflater, list, this);
-    }
-
+    @NonNull
     @Override
     public abstract GenericViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType);
 
@@ -48,11 +48,6 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
     @Override
     public long getItemId(int position) {
         return genericAdapter.getItemId(position);
-    }
-
-    @Override
-    public int getItemCount() {
-        return genericAdapter.getAdapterData() != null ? genericAdapter.getAdapterData().size() : 0;
     }
 
     @Override
@@ -78,16 +73,8 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         genericAdapter.setSectionTitleProvider(sectionTitleProvider);
     }
 
-    public ItemInfo getItem(int index) {
-        return genericAdapter.getItem(index);
-    }
-
-    public ItemInfo getFirstItem() {
-        return genericAdapter.getItem(0);
-    }
-
-    public ItemInfo getLastItem() {
-        return genericAdapter.getItem(genericAdapter.getAdapterData().size() - 1);
+    public boolean isSectionHeader(int index) {
+        return genericAdapter.isSectionHeader(index);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -114,34 +101,6 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         return genericAdapter.getItemSwipeObservable();
     }
 
-    public boolean hasItemById(long itemId) {
-        return genericAdapter.hasItemById(itemId);
-    }
-
-    public int getItemIndexById(long itemId) {
-        return genericAdapter.getItemIndexById(itemId);
-    }
-
-    public ItemInfo getItemById(long itemId) throws IllegalAccessException {
-        return genericAdapter.getItemById(itemId);
-    }
-
-    public void disableViewHolder(int index) {
-        genericAdapter.disableViewHolder(index);
-    }
-
-    public void enableViewHolder(int index) {
-        genericAdapter.enableViewHolder(index);
-    }
-
-    public boolean isSelectionAllowed() {
-        return genericAdapter.isSelectionAllowed();
-    }
-
-    public void setAllowSelection(boolean allowSelection) {
-        genericAdapter.setAllowSelection(allowSelection);
-    }
-
     public boolean areItemsClickable() {
         return genericAdapter.areItemsClickable();
     }
@@ -156,10 +115,6 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
 
     public void setAreItemsExpandable(boolean areItemsExpandable) {
         genericAdapter.setAreItemsExpandable(areItemsExpandable);
-    }
-
-    public boolean isSectionHeader(int index) {
-        return genericAdapter.isSectionHeader(index);
     }
 
     public List<ItemInfo> getDataList() {
@@ -218,33 +173,5 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
 
     public LayoutInflater getLayoutInflater() {
         return genericAdapter.getLayoutInflater();
-    }
-
-    private void validateList(List<ItemInfo> dataList) {
-        if (dataList == null) {
-            throw new IllegalArgumentException("The list cannot be null");
-        }
-    }
-
-    public void setDataList(List<ItemInfo> dataList, DiffUtil.DiffResult diffResult) {
-        validateList(dataList);
-        genericAdapter.setData(dataList);
-        if (diffResult != null)
-            diffResult.dispatchUpdatesTo(this);
-        else notifyDataSetChanged();
-    }
-
-    public Disposable setDataFlowable(Flowable<List<ItemInfo>> dataFlowable) {
-        return dataFlowable.subscribe(new Consumer<List<ItemInfo>>() {
-            @Override
-            public void accept(List<ItemInfo> dataSet) {
-                setDataList(dataSet, null);
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        });
     }
 }
