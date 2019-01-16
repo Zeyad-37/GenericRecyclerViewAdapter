@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.Zeyad-37'
 
@@ -30,6 +31,10 @@ android {
         //locations for the rules and output
         lintConfig file("${rootDir}/config/lint/lint-config.xml")
         htmlOutput file("${buildDir}/reports/lint/lint.html")
+    }
+
+    androidExtensions {
+        experimental = true
     }
 }
 
