@@ -1,5 +1,5 @@
-<manifest package="com.zeyad.generic.genericrecyclerview"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.zeyad.gadapter">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <application
@@ -12,8 +12,9 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name="com.zeyad.generic.genericrecyclerview.adapter.screens.splash.SplashActivity"
-            android:theme="@style/SplashTheme">
+            android:name="com.zeyad.gadapter.screens.user.list.UserListActivity"
+            android:label="@string/title_user_list"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,16 +22,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.zeyad.generic.genericrecyclerview.adapter.screens.user.list.UserListActivity"
-            android:label="@string/title_user_list"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="com.zeyad.generic.genericrecyclerview.adapter.screens.user.detail.UserDetailActivity"
-            android:parentActivityName=".adapter.screens.user.list.UserListActivity"
+            android:name="com.zeyad.gadapter.screens.user.detail.UserDetailActivity"
+            android:parentActivityName=".screens.user.list.UserListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".adapter.screens.user.detail.UserDetailActivity" />
+                android:value=".screens.user.detail.UserDetailActivity" />
         </activity>
     </application>
 </manifest>
