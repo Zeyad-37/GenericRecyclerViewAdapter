@@ -4,7 +4,6 @@ import android.app.ActivityOptions
 import android.app.SearchManager
 import android.content.Context
 import android.support.v7.view.ActionMode
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.helper.ItemTouchHelper
@@ -15,6 +14,7 @@ import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
 import com.zeyad.gadapter.*
 import com.zeyad.gadapter.ItemInfo.Companion.SECTION_HEADER
+import com.zeyad.gadapter.fastscroll.SectionTitleProvider
 import com.zeyad.gadapter.screens.BaseActivity
 import com.zeyad.gadapter.screens.user.User
 import com.zeyad.gadapter.screens.user.detail.UserDetailActivity
@@ -23,6 +23,7 @@ import com.zeyad.gadapter.screens.user.detail.UserDetailState
 import com.zeyad.gadapter.screens.user.list.viewHolders.EmptyViewHolder
 import com.zeyad.gadapter.screens.user.list.viewHolders.SectionHeaderViewHolder
 import com.zeyad.gadapter.screens.user.list.viewHolders.UserViewHolder
+import com.zeyad.gadapter.stickyheaders.StickyLayoutManager
 import com.zeyad.gadapter.utils.hasLollipop
 import com.zeyad.rxredux.core.BaseEvent
 import com.zeyad.rxredux.core.view.ErrorMessageFactory
@@ -160,9 +161,20 @@ class UserListActivity : BaseActivity<UserListState, UserListVM>(), OnStartDragL
         eventObservable = eventObservable.mergeWith(usersAdapter.itemSwipeObservable
                 .map { itemInfo -> DeleteUsersEvent(listOf(itemInfo.getData<User>().login)) }
                 .doOnEach { Log.d("DeleteEvent", FIRED) })
-        user_list.layoutManager = LinearLayoutManager(this)
+//        user_list.layoutManager = LinearLayoutManager(this)
+        user_list.layoutManager = StickyLayoutManager(this, RecyclerView.VERTICAL, false, usersAdapter)
         user_list.adapter = usersAdapter
         usersAdapter.setAllowSelection(true)
+        usersAdapter.sectionTitleProvider = object : SectionTitleProvider {
+            override fun getSectionTitle(position: Int): String {
+                return when (position) {
+                    0 -> "1"
+                    3 -> "2"
+                    7 -> "3"
+                    else -> "4"
+                }
+            }
+        }
         fastscroll.setRecyclerView(user_list)
         eventObservable = eventObservable.mergeWith(RxRecyclerView.scrollEvents(user_list)
                 .map { recyclerViewScrollEvent ->
