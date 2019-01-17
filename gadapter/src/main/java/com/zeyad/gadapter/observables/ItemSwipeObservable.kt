@@ -16,7 +16,7 @@ class ItemSwipeObservable(private val genericRecyclerViewAdapter: GenericAdapter
         }
         val listener = Listener(observer)
         observer.onSubscribe(listener)
-        genericRecyclerViewAdapter.setOnItemSwipeListener(listener.onSwipeListener)
+        genericRecyclerViewAdapter.onSwipeListener = listener.onSwipeListener
     }
 
     internal inner class Listener(observer: Observer<in ItemInfo>) : MainThreadDisposable() {

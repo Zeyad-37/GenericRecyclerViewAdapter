@@ -13,7 +13,7 @@ class ItemClickObservable(private val genericRecyclerViewAdapter: GenericAdapter
         }
         val listener = Listener(observer)
         observer.onSubscribe(listener)
-        genericRecyclerViewAdapter.setOnItemClickListener(listener.onItemClickListener)
+        genericRecyclerViewAdapter.onItemClickListener = listener.onItemClickListener
     }
 
     internal inner class Listener(observer: Observer<in ClickEvent>) : MainThreadDisposable() {

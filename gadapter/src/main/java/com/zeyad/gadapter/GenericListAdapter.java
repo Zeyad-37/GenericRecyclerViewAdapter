@@ -93,8 +93,8 @@ public abstract class GenericListAdapter extends ListAdapter<ItemInfo, GenericVi
         return genericAdapter.getItemLongClickObservable();
     }
 
-    public void setOnItemSwipeListener(OnSwipeListener onSwipeListener) {
-        genericAdapter.setOnItemSwipeListener(onSwipeListener);
+    public void setOnSwipeListener(OnSwipeListener onSwipeListener) {
+        genericAdapter.setOnSwipeListener(onSwipeListener);
     }
 
     public ItemSwipeObservable getItemSwipeObservable() {
@@ -102,7 +102,7 @@ public abstract class GenericListAdapter extends ListAdapter<ItemInfo, GenericVi
     }
 
     public boolean areItemsClickable() {
-        return genericAdapter.areItemsClickable();
+        return genericAdapter.getAreItemsClickable();
     }
 
     public void setAreItemsClickable(boolean areItemsClickable) {
@@ -110,7 +110,7 @@ public abstract class GenericListAdapter extends ListAdapter<ItemInfo, GenericVi
     }
 
     public boolean areItemsExpandable() {
-        return genericAdapter.areItemsExpandable();
+        return genericAdapter.getAreItemsExpandable();
     }
 
     public void setAreItemsExpandable(boolean areItemsExpandable) {

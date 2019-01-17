@@ -13,7 +13,7 @@ class ItemLongClickObservable(private val genericRecyclerViewAdapter: GenericAda
         }
         val listener = Listener(observer)
         observer.onSubscribe(listener)
-        genericRecyclerViewAdapter.setOnItemLongClickListener(listener.onItemLongClickListener)
+        genericRecyclerViewAdapter.onItemLongClickListener = listener.onItemLongClickListener
     }
 
     internal inner class Listener(observer: Observer<in ClickEvent>) : MainThreadDisposable() {

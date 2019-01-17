@@ -106,8 +106,8 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         return genericAdapter.getItemLongClickObservable();
     }
 
-    public void setOnItemSwipeListener(OnSwipeListener onSwipeListener) {
-        genericAdapter.setOnItemSwipeListener(onSwipeListener);
+    public void setOnSwipeListener(OnSwipeListener onSwipeListener) {
+        genericAdapter.setOnSwipeListener(onSwipeListener);
     }
 
     public ItemSwipeObservable getItemSwipeObservable() {
@@ -139,11 +139,11 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
     }
 
     public void setAllowSelection(boolean allowSelection) {
-        genericAdapter.setAllowSelection(allowSelection);
+        genericAdapter.setSelectionAllowed(allowSelection);
     }
 
     public boolean areItemsClickable() {
-        return genericAdapter.areItemsClickable();
+        return genericAdapter.getAreItemsClickable();
     }
 
     public void setAreItemsClickable(boolean areItemsClickable) {
@@ -151,7 +151,7 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
     }
 
     public boolean areItemsExpandable() {
-        return genericAdapter.areItemsExpandable();
+        return genericAdapter.getAreItemsExpandable();
     }
 
     public void setAreItemsExpandable(boolean areItemsExpandable) {
