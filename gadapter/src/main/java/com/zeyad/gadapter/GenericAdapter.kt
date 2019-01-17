@@ -84,14 +84,14 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
                 holder.itemView.setOnClickListener {
                     val adapterPosition = holder.adapterPosition
                     if (adapterPosition != NO_POSITION) {
-                        onItemClickListener!!.onItemClicked(adapterPosition, itemInfo, holder)
+                        onItemClickListener?.onItemClicked(adapterPosition, itemInfo, holder)
                     }
                 }
             }
             if (onItemLongClickListener != null) {
                 holder.itemView.setOnLongClickListener {
                     val adapterPosition = holder.adapterPosition
-                    adapterPosition != NO_POSITION && onItemLongClickListener!!.onItemLongClicked(adapterPosition, itemInfo, holder)
+                    adapterPosition != NO_POSITION && onItemLongClickListener?.onItemLongClicked(adapterPosition, itemInfo, holder)!!
                 }
             }
         }
@@ -125,7 +125,7 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
 
     fun onItemDismiss(position: Int) {
         if (onSwipeListener != null)
-            onSwipeListener!!.onItemSwipe(getItem(position))
+            onSwipeListener?.onItemSwipe(getItem(position))
         removeItem(position)
     }
 

@@ -18,7 +18,7 @@ abstract class ScrollerViewProvider {
     private var bubbleBehavior: ViewBehavior? = null
 
     val context: Context
-        get() = scroller!!.context
+        get() = scroller?.context!!
 
     /**
      * To offset the position of the bubble relative to the handle. E.g. in [DefaultScrollerViewProvider]
@@ -71,29 +71,29 @@ abstract class ScrollerViewProvider {
 
     fun onHandleGrabbed() {
         if (getHandleBehavior() != null)
-            getHandleBehavior()!!.onHandleGrabbed()
+            getHandleBehavior()?.onHandleGrabbed()
         if (getBubbleBehavior() != null)
-            getBubbleBehavior()!!.onHandleGrabbed()
+            getBubbleBehavior()?.onHandleGrabbed()
     }
 
     fun onHandleReleased() {
         if (getHandleBehavior() != null)
-            getHandleBehavior()!!.onHandleReleased()
+            getHandleBehavior()?.onHandleReleased()
         if (getBubbleBehavior() != null)
-            getBubbleBehavior()!!.onHandleReleased()
+            getBubbleBehavior()?.onHandleReleased()
     }
 
     fun onScrollStarted() {
         if (getHandleBehavior() != null)
-            getHandleBehavior()!!.onScrollStarted()
+            getHandleBehavior()?.onScrollStarted()
         if (getBubbleBehavior() != null)
-            getBubbleBehavior()!!.onScrollStarted()
+            getBubbleBehavior()?.onScrollStarted()
     }
 
     fun onScrollFinished() {
         if (getHandleBehavior() != null)
-            getHandleBehavior()!!.onScrollFinished()
+            getHandleBehavior()?.onScrollFinished()
         if (getBubbleBehavior() != null)
-            getBubbleBehavior()!!.onScrollFinished()
+            getBubbleBehavior()?.onScrollFinished()
     }
 }

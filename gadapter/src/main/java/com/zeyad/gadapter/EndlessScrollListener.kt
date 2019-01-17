@@ -80,7 +80,7 @@ abstract class EndlessScrollListener : RecyclerView.OnScrollListener {
         if (dy <= 0) return
         //        Log.i(TAG, "onScrolled-------dy:" + dy);
         val adapter = view.adapter
-        val totalItemCount = adapter!!.itemCount
+        val totalItemCount = adapter?.itemCount!!
         val lastVisibleItemPosition = lastVisibleItemPosition
         val isAllowLoadMore = lastVisibleItemPosition + visibleThreshold > totalItemCount
         if (isAllowLoadMore) {

@@ -180,7 +180,7 @@ class UserListActivity : BaseActivity<UserListState, UserListVM>(), OnStartDragL
                 .map { recyclerViewScrollEvent ->
                     GetPaginatedUsersEvent(
                             if (ScrollEventCalculator.isAtScrollEnd(recyclerViewScrollEvent))
-                                viewState!!.lastId
+                                viewState?.lastId!!
                             else -1)
                 }
                 .filter { it.getPayLoad() != -1L }
