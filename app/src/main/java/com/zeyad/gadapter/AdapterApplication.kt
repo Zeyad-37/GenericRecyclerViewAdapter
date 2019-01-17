@@ -3,6 +3,7 @@ package com.zeyad.gadapter
 import android.app.Application
 import android.os.StrictMode
 import android.util.Log
+import com.zeyad.gadapter.di.myModule
 import com.zeyad.gadapter.utils.Constants.URLS.API_BASE_URL
 import com.zeyad.rxredux.core.eventbus.RxEventBusFactory
 import com.zeyad.usecases.api.DataServiceConfig
@@ -14,6 +15,7 @@ import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.android.startKoin
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -72,11 +74,10 @@ class AdapterApplication : Application() {
         //                   .subscribe(() -> {
         //                   }, Throwable::printStackTrace);
         //        initializeRealm();
+        startKoin(this, listOf(myModule))
         DataServiceFactory(DataServiceConfig.Builder(this)
                 .baseUrl(apiBaseUrl)
                 .okHttpBuilder(okHttpBuilder)
-                .withCache(3, TimeUnit.MINUTES)
-                //                .withRealm()
                 .build())
     }
 

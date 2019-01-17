@@ -1,11 +1,11 @@
 package com.zeyad.gadapter
 
 interface OnItemClickListener {
-    fun onItemClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder)
+    fun onItemClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder<*>)
 }
 
 interface OnItemLongClickListener {
-    fun onItemLongClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder): Boolean
+    fun onItemLongClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder<*>): Boolean
 }
 
 interface OnSwipeListener {

@@ -21,7 +21,7 @@ class ItemClickObservable(private val genericRecyclerViewAdapter: GenericAdapter
 
         init {
             this.onItemClickListener = object : OnItemClickListener {
-                override fun onItemClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder) {
+                override fun onItemClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder<*>) {
                     if (!isDisposed) {
                         observer.onNext(ClickEvent(position, itemInfo, holder))
                     }

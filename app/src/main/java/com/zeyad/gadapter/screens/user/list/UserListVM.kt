@@ -2,6 +2,7 @@ package com.zeyad.gadapter.screens.user.list
 
 import android.support.v7.util.DiffUtil
 import com.zeyad.gadapter.ItemInfo
+import com.zeyad.gadapter.ItemInfo.Companion.SECTION_HEADER
 import com.zeyad.gadapter.R
 import com.zeyad.gadapter.screens.user.User
 import com.zeyad.gadapter.screens.user.UserDiffCallBack
@@ -39,7 +40,13 @@ class UserListVM(private val dataUseCase: IDataService) : BaseViewModel<UserList
                     is List<*> -> {
                         val pair = Flowable.fromIterable(newResult as List<User>)
                                 .map { ItemInfo(it, R.layout.user_item_layout, it.id) }
-                                .toList().toFlowable()
+                                .toList()
+                                .map { list: MutableList<ItemInfo> ->
+                                    list.add(0, ItemInfo("Title 1", SECTION_HEADER, SECTION_HEADER.toLong()))
+                                    list.add(4, ItemInfo("Title 2", SECTION_HEADER, SECTION_HEADER.toLong()))
+                                    list
+                                }
+                                .toFlowable()
                                 .calculateDiff(currentItemInfo)
                         GetState(pair.first, pair.first[pair.first.size - 1].id).callback(pair.second)
                     }

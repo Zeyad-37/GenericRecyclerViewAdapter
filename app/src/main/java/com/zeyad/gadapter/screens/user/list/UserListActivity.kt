@@ -96,7 +96,7 @@ class UserListActivity : BaseActivity<UserListState, UserListVM>(), OnStartDragL
     private fun setupRecyclerView() {
         usersAdapter = object : GenericRecyclerViewAdapter(
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater, ArrayList()) {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder =
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder<*> =
                     when (viewType) {
                         SECTION_HEADER -> SectionHeaderViewHolder(layoutInflater
                                 .inflate(R.layout.section_header_layout, parent, false))
@@ -109,7 +109,7 @@ class UserListActivity : BaseActivity<UserListState, UserListVM>(), OnStartDragL
         }
         usersAdapter.setAreItemsClickable(true)
         usersAdapter.setOnItemClickListener(object : OnItemClickListener {
-            override fun onItemClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder) {
+            override fun onItemClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder<*>) {
                 if (actionMode != null) {
                     toggleItemSelection(position)
                 } else if (itemInfo.getData<Any>() is User) {
@@ -149,7 +149,7 @@ class UserListActivity : BaseActivity<UserListState, UserListVM>(), OnStartDragL
             }
         })
         usersAdapter.setOnItemLongClickListener(object : OnItemLongClickListener {
-            override fun onItemLongClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder): Boolean {
+            override fun onItemLongClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder<*>): Boolean {
                 if (usersAdapter.isSelectionAllowed) {
                     actionMode = startSupportActionMode(this@UserListActivity)
                     toggleItemSelection(position)
@@ -158,12 +158,12 @@ class UserListActivity : BaseActivity<UserListState, UserListVM>(), OnStartDragL
             }
         })
         eventObservable = eventObservable.mergeWith(usersAdapter.itemSwipeObservable
-                .map { itemInfo -> DeleteUsersEvent(listOf((itemInfo.getData<Any>() as User).login)) }
+                .map { itemInfo -> DeleteUsersEvent(listOf(itemInfo.getData<User>().login)) }
                 .doOnEach { Log.d("DeleteEvent", FIRED) })
         user_list.layoutManager = LinearLayoutManager(this)
         user_list.adapter = usersAdapter
         usersAdapter.setAllowSelection(true)
-        //        fastScroller.setRecyclerView(userRecycler);
+        fastscroll.setRecyclerView(user_list)
         eventObservable = eventObservable.mergeWith(RxRecyclerView.scrollEvents(user_list)
                 .map { recyclerViewScrollEvent ->
                     GetPaginatedUsersEvent(

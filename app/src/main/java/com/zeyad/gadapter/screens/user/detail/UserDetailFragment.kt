@@ -22,7 +22,6 @@ import com.zeyad.gadapter.ItemInfo
 import com.zeyad.gadapter.R
 import com.zeyad.gadapter.screens.BaseFragment
 import com.zeyad.gadapter.screens.user.list.UserListActivity
-import com.zeyad.gadapter.screens.user.list.UserListActivity2
 import com.zeyad.rxredux.core.BaseEvent
 import com.zeyad.rxredux.core.view.ErrorMessageFactory
 import com.zeyad.rxredux.core.view.UI_MODEL
@@ -94,7 +93,7 @@ class UserDetailFragment : BaseFragment<UserDetailState, UserDetailVM>() {
         repositoriesAdapter.setDataList(successState.repos, null)
         val user = successState.user
         if (successState.isTwoPane) {
-            (activity as UserListActivity2).let { activity ->
+            (activity as UserListActivity).let { activity ->
                 val appBarLayout = activity.findViewById<Toolbar>(R.id.toolbar)
                 if (appBarLayout != null) {
                     appBarLayout.title = user.login

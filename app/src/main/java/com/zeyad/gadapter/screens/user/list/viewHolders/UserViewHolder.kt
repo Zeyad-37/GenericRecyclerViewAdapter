@@ -7,6 +7,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.zeyad.gadapter.GenericViewHolder
 import com.zeyad.gadapter.screens.user.User
+import kotlinx.android.synthetic.main.user_item_layout.view.*
 
 class UserViewHolder(itemView: View) : GenericViewHolder<User>(itemView) {
 
