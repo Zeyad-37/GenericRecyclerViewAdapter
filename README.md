@@ -18,6 +18,8 @@ A General Purpose adapter, equipped with all kinds of functions and animations.
 
 7- Sticky Headers
 
-# Project Plan
+8- Rx event support (Click, Long Click & Swipe)
 
-1- Rx event support (Click, Long Click & Swipe)
+9- Drag and Drop
+
+10- ListAdapter support
