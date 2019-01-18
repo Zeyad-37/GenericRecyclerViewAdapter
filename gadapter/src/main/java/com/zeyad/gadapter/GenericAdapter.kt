@@ -77,8 +77,8 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
 
     fun onBindViewHolder(holder: GenericViewHolder<Any>, position: Int) {
         val itemInfo = dataList[position]
-        holder.bindData(itemInfo.getData(), selectedItems.get(position, false), position,
-                itemInfo.isEnabled)
+        holder.bindData(itemInfo.getData(), position, selectedItems.get(position, false),
+                itemInfo.isEnabled, expandedPositions.contains(position))
         if (areItemsClickable && !isSectionHeader(position)) {
             if (onItemClickListener != null) {
                 holder.itemView.setOnClickListener {
@@ -96,7 +96,7 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
             }
         }
         if (areItemsExpandable && holder is OnExpandListener) {
-            (holder as OnExpandListener).expand(expandedPositions.contains(position))
+            holder.expand(expandedPositions.contains(position))
             holder.itemView.isActivated = true
             holder.itemView.setOnClickListener {
                 val adapterPosition = holder.adapterPosition

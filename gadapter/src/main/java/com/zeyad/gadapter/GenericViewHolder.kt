@@ -9,5 +9,5 @@ abstract class GenericViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(it
     override val containerView: View?
         get() = itemView
 
-    abstract fun bindData(data: T, isItemSelected: Boolean, position: Int, isEnabled: Boolean)
+    abstract fun bindData(data: T, position: Int, isItemSelected: Boolean, isEnabled: Boolean, isExpanded: Boolean)
 }
