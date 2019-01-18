@@ -18,6 +18,7 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
+@SuppressWarnings("unused")
 public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<GenericViewHolder>
         implements ItemTouchHelperAdapter, StickyHeaderHandler {
 
@@ -32,6 +33,7 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         genericAdapter = new GenericAdapter(layoutInflater, list, this);
     }
 
+    @NonNull
     @Override
     public abstract GenericViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType);
 
@@ -52,7 +54,7 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
 
     @Override
     public int getItemCount() {
-        return genericAdapter.getAdapterData() != null ? genericAdapter.getAdapterData().size() : 0;
+        return genericAdapter.getAdapterData().size();
     }
 
     @Override
@@ -65,6 +67,7 @@ public abstract class GenericRecyclerViewAdapter extends RecyclerView.Adapter<Ge
         genericAdapter.onItemDismiss(position);
     }
 
+    @NonNull
     @Override
     public List<ItemInfo> getAdapterData() {
         return genericAdapter.getAdapterData();

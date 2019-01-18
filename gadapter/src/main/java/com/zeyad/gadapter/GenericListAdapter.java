@@ -15,6 +15,7 @@ import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public abstract class GenericListAdapter extends ListAdapter<ItemInfo, GenericViewHolder>
         implements ItemTouchHelperAdapter, StickyHeaderHandler {
 
@@ -60,6 +61,7 @@ public abstract class GenericListAdapter extends ListAdapter<ItemInfo, GenericVi
         genericAdapter.onItemDismiss(position);
     }
 
+    @NonNull
     @Override
     public List<ItemInfo> getAdapterData() {
         return genericAdapter.getAdapterData();
