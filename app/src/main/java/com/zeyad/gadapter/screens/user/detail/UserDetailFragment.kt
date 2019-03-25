@@ -18,7 +18,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.zeyad.gadapter.GenericRecyclerViewAdapter
 import com.zeyad.gadapter.GenericViewHolder
-import com.zeyad.gadapter.ItemInfo
 import com.zeyad.gadapter.R
 import com.zeyad.gadapter.screens.BaseFragment
 import com.zeyad.gadapter.screens.user.list.UserListActivity
@@ -80,9 +79,8 @@ class UserDetailFragment : BaseFragment<UserDetailState, UserDetailVM>() {
     private fun setupRecyclerView() {
         recyclerView_repositories.layoutManager = LinearLayoutManager(context)
         repositoriesAdapter = object : GenericRecyclerViewAdapter(
-                requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater,
-                ArrayList<ItemInfo>()) {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder<*> {
+                requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater, ArrayList()) {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder {
                 return RepositoryViewHolder(layoutInflater.inflate(viewType, parent, false))
             }
         }

@@ -8,9 +8,9 @@ import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable
 
-class ItemSwipeObservable(private val genericRecyclerViewAdapter: GenericAdapter) : Observable<ItemInfo>() {
+class ItemSwipeObservable(private val genericRecyclerViewAdapter: GenericAdapter) : Observable<ItemInfo<*>>() {
 
-    override fun subscribeActual(observer: Observer<in ItemInfo>) {
+    override fun subscribeActual(observer: Observer<in ItemInfo<*>>) {
         if (!observer.checkMainThread()) {
             return
         }
@@ -19,12 +19,12 @@ class ItemSwipeObservable(private val genericRecyclerViewAdapter: GenericAdapter
         genericRecyclerViewAdapter.onSwipeListener = listener.onSwipeListener
     }
 
-    internal inner class Listener(observer: Observer<in ItemInfo>) : MainThreadDisposable() {
+    internal inner class Listener(observer: Observer<in ItemInfo<*>>) : MainThreadDisposable() {
         internal val onSwipeListener: OnSwipeListener
 
         init {
             this.onSwipeListener = object : OnSwipeListener {
-                override fun onItemSwipe(itemInfo: ItemInfo) {
+                override fun onItemSwipe(itemInfo: ItemInfo<*>) {
                     if (!isDisposed) {
                         observer.onNext(itemInfo)
                     }

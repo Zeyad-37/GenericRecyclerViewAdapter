@@ -9,5 +9,5 @@ interface StickyHeaderHandler {
     /**
      * @return The dataset supplied to the [RecyclerView.Adapter]
      */
-    val adapterData: List<ItemInfo>
+    val adapterData: List<ItemInfo<*>>
 }

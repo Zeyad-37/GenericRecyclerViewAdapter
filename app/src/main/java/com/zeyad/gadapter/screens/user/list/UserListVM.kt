@@ -1,8 +1,8 @@
 package com.zeyad.gadapter.screens.user.list
 
 import android.support.v7.util.DiffUtil
+import com.zeyad.gadapter.GenericAdapter.Companion.SECTION_HEADER
 import com.zeyad.gadapter.ItemInfo
-import com.zeyad.gadapter.ItemInfo.Companion.SECTION_HEADER
 import com.zeyad.gadapter.R
 import com.zeyad.gadapter.screens.user.User
 import com.zeyad.gadapter.screens.user.UserDiffCallBack
@@ -41,10 +41,11 @@ class UserListVM(private val dataUseCase: IDataService) : BaseViewModel<UserList
                         val pair = Flowable.fromIterable(newResult as List<User>)
                                 .map { ItemInfo(it, R.layout.user_item_layout, it.id) }
                                 .toList()
-                                .map { list: MutableList<ItemInfo> ->
-                                    list.add(0, ItemInfo("Title 1", SECTION_HEADER, SECTION_HEADER.toLong()))
-                                    list.add(4, ItemInfo("Title 2", SECTION_HEADER, SECTION_HEADER.toLong()))
-                                    list
+                                .map { it as MutableList<ItemInfo<*>> }
+                                .map {
+                                    it.add(0, ItemInfo("Title 1", SECTION_HEADER, SECTION_HEADER.toLong()))
+                                    it.add(4, ItemInfo("Title 2", SECTION_HEADER, SECTION_HEADER.toLong()))
+                                    it
                                 }
                                 .toFlowable()
                                 .calculateDiff(currentItemInfo)
@@ -71,9 +72,9 @@ class UserListVM(private val dataUseCase: IDataService) : BaseViewModel<UserList
         }
     }
 
-    private fun Flowable<MutableList<ItemInfo>>.calculateDiff(initialList: MutableList<ItemInfo>)
-            : Pair<MutableList<ItemInfo>, DiffUtil.DiffResult> =
-            scan<Pair<MutableList<ItemInfo>, DiffUtil.DiffResult>>(Pair(initialList,
+    private fun Flowable<MutableList<ItemInfo<*>>>.calculateDiff(initialList: MutableList<ItemInfo<*>>)
+            : Pair<MutableList<ItemInfo<*>>, DiffUtil.DiffResult> =
+            scan(Pair(initialList,
                     DiffUtil.calculateDiff(UserDiffCallBack(mutableListOf(), mutableListOf()))))
             { pair1, next -> Pair(next, DiffUtil.calculateDiff(UserDiffCallBack(pair1.first, next))) }
                     .skip(1)

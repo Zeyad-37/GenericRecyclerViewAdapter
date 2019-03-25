@@ -94,9 +94,13 @@ class FastScroller @JvmOverloads constructor(context: Context, attrs: AttributeS
         this.recyclerView = recyclerView
         val adapter = recyclerView.adapter
         if (adapter is GenericRecyclerViewAdapter)
-            titleProvider = adapter.sectionTitleProvider
+            adapter.sectionTitleProvider?.let {
+                titleProvider = it
+            }
         else if (adapter is GenericListAdapter) {
-            titleProvider = adapter.sectionTitleProvider
+            adapter.sectionTitleProvider?.let {
+                titleProvider = it
+            }
         }
         recyclerView.addOnScrollListener(scrollListener)
         invalidateVisibility()

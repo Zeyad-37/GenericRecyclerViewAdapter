@@ -13,7 +13,7 @@ import android.widget.ImageView
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
 import com.zeyad.gadapter.*
-import com.zeyad.gadapter.ItemInfo.Companion.SECTION_HEADER
+import com.zeyad.gadapter.GenericAdapter.Companion.SECTION_HEADER
 import com.zeyad.gadapter.fastscroll.SectionTitleProvider
 import com.zeyad.gadapter.screens.BaseActivity
 import com.zeyad.gadapter.screens.user.User
@@ -97,7 +97,7 @@ class UserListActivity : BaseActivity<UserListState, UserListVM>(), OnStartDragL
     private fun setupRecyclerView() {
         usersAdapter = object : GenericRecyclerViewAdapter(
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater, ArrayList()) {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder<*> =
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder =
                     when (viewType) {
                         SECTION_HEADER -> SectionHeaderViewHolder(layoutInflater
                                 .inflate(R.layout.section_header_layout, parent, false))
@@ -110,11 +110,11 @@ class UserListActivity : BaseActivity<UserListState, UserListVM>(), OnStartDragL
         }
         usersAdapter.setAreItemsClickable(true)
         usersAdapter.setOnItemClickListener(object : OnItemClickListener {
-            override fun onItemClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder<*>) {
+            override fun onItemClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder) {
                 if (actionMode != null) {
                     toggleItemSelection(position)
-                } else if (itemInfo.getData<Any>() is User) {
-                    val userModel = itemInfo.getData<User>()
+                } else if (itemInfo.data is User) {
+                    val userModel = itemInfo.data as User
                     val userDetailState = UserDetailState.builder().setUser(userModel).setIsTwoPane(twoPane)
                             .build()
                     var pair: android.util.Pair<View, String>? = null
@@ -150,7 +150,7 @@ class UserListActivity : BaseActivity<UserListState, UserListVM>(), OnStartDragL
             }
         })
         usersAdapter.setOnItemLongClickListener(object : OnItemLongClickListener {
-            override fun onItemLongClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder<*>): Boolean {
+            override fun onItemLongClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder): Boolean {
                 if (usersAdapter.isSelectionAllowed) {
                     actionMode = startSupportActionMode(this@UserListActivity)
                     toggleItemSelection(position)
@@ -159,7 +159,7 @@ class UserListActivity : BaseActivity<UserListState, UserListVM>(), OnStartDragL
             }
         })
         eventObservable = eventObservable.mergeWith(usersAdapter.itemSwipeObservable
-                .map { itemInfo -> DeleteUsersEvent(listOf(itemInfo.getData<User>().login)) }
+                .map { itemInfo -> DeleteUsersEvent(listOf((itemInfo.data as User).login)) }
                 .doOnEach { Log.d("DeleteEvent", FIRED) })
 //        user_list.layoutManager = LinearLayoutManager(this)
         user_list.layoutManager = StickyLayoutManager(this, RecyclerView.VERTICAL, false, usersAdapter)
@@ -225,7 +225,7 @@ class UserListActivity : BaseActivity<UserListState, UserListVM>(), OnStartDragL
         mode.menuInflater.inflate(R.menu.selected_list_menu, menu)
         menu.findItem(R.id.delete_item).setOnMenuItemClickListener {
             postOnResumeEvents.onNext(DeleteUsersEvent(Observable.fromIterable(usersAdapter.selectedItems)
-                    .map<String> { itemInfo -> itemInfo.getData<User>().login }.toList()
+                    .map<String> { itemInfo -> (itemInfo.data as User).login }.toList()
                     .blockingGet()))
             true
         }

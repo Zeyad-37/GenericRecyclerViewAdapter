@@ -4,16 +4,16 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.NO_POSITION
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
-import com.zeyad.gadapter.ItemInfo.Companion.SECTION_HEADER
 import com.zeyad.gadapter.fastscroll.SectionTitleProvider
 import com.zeyad.gadapter.observables.ItemClickObservable
 import com.zeyad.gadapter.observables.ItemLongClickObservable
 import com.zeyad.gadapter.observables.ItemSwipeObservable
 import java.util.*
+import kotlin.collections.ArrayList
 
 class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: RecyclerView.Adapter<*>) {
     private val selectedItems: SparseBooleanArray = SparseBooleanArray()
-    private val dataList: MutableList<ItemInfo> = mutableListOf()
+    private val dataList: MutableList<ItemInfo<*>> = mutableListOf()
     private val expandedPositions: MutableList<Int> = mutableListOf()
     var onItemClickListener: OnItemClickListener? = null
     var onItemLongClickListener: OnItemLongClickListener? = null
@@ -23,7 +23,7 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
     var areItemsExpandable: Boolean = false
     var areItemsClickable: Boolean = false
 
-    val adapterData: List<ItemInfo>
+    val adapterData: List<ItemInfo<*>>
         get() = dataList
 
     val itemClickObservable: ItemClickObservable
@@ -71,13 +71,13 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
         this.areItemsClickable = true
     }
 
-    constructor(layoutInflater: LayoutInflater, dataList: MutableList<ItemInfo>, adapter: RecyclerView.Adapter<*>) : this(layoutInflater, adapter) {
+    constructor(layoutInflater: LayoutInflater, dataList: List<ItemInfo<*>>, adapter: RecyclerView.Adapter<*>) : this(layoutInflater, adapter) {
         setData(dataList)
     }
 
-    fun onBindViewHolder(holder: GenericViewHolder<Any>, position: Int) {
+    fun onBindViewHolder(holder: GenericViewHolder, position: Int) {
         val itemInfo = dataList[position]
-        holder.bindData(itemInfo.getData(), position, selectedItems.get(position, false),
+        holder.bindData(itemInfo.data, position, selectedItems.get(position, false),
                 itemInfo.isEnabled, expandedPositions.contains(position))
         if (areItemsClickable && !isSectionHeader(position)) {
             if (onItemClickListener != null) {
@@ -129,7 +129,7 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
         removeItem(position)
     }
 
-    fun getItem(index: Int): ItemInfo = dataList[index]
+    fun getItem(index: Int): ItemInfo<*> = dataList[index]
 
     fun isSectionHeader(index: Int): Boolean =
             dataList[index].id == SECTION_HEADER.toLong() || dataList[index].layoutId == SECTION_HEADER
@@ -187,9 +187,9 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
         }
     }
 
-    fun getSelectedItems(): List<ItemInfo> {
+    fun getSelectedItems(): List<ItemInfo<*>> {
         if (isSelectionAllowed) {
-            val items = ArrayList<ItemInfo>(selectedItems.size())
+            val items = ArrayList<ItemInfo<*>>(selectedItems.size())
             for (i in 0 until selectedItems.size()) {
                 items.add(dataList[selectedItems.keyAt(i)])
             }
@@ -199,16 +199,16 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
         }
     }
 
-    fun <T> getSelectedItemsBundle(): List<T> {
+    fun getSelectedItemsBundle(): List<*> {
         val selectedItems = getSelectedItems()
-        val bundles = ArrayList<T>(selectedItems.size)
+        val bundles = mutableListOf<Any?>()
         for (itemInfo in selectedItems) {
-            bundles.add(itemInfo.getData())
+            bundles.add(itemInfo.data)
         }
         return bundles
     }
 
-    fun removeItem(position: Int): ItemInfo {
+    fun removeItem(position: Int): ItemInfo<*> {
         val itemInfo = dataList.removeAt(position)
         adapter.notifyItemRemoved(position)
         return itemInfo
@@ -219,7 +219,7 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
         adapter.notifyItemMoved(fromPosition, toPosition)
     }
 
-    fun setData(dataList: MutableList<ItemInfo>) {
+    fun setData(dataList: List<ItemInfo<*>>) {
         this.dataList.clear()
         this.dataList.addAll(dataList)
     }
@@ -243,7 +243,7 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
     }
 
     @Throws(IllegalAccessException::class)
-    fun getItemById(itemId: Long): ItemInfo {
+    fun getItemById(itemId: Long): ItemInfo<*> {
         for (itemInfo in dataList) {
             if (itemInfo.id == itemId) {
                 return itemInfo
@@ -264,5 +264,6 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
     companion object {
 
         private const val SELECTION_DISABLED = "Selection mode is disabled!"
+        const val SECTION_HEADER = 1
     }
 }

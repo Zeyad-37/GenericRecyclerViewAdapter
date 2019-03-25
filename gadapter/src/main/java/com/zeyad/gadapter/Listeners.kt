@@ -3,15 +3,15 @@ package com.zeyad.gadapter
 import android.support.v7.widget.RecyclerView
 
 interface OnItemClickListener {
-    fun onItemClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder<*>)
+    fun onItemClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder)
 }
 
 interface OnItemLongClickListener {
-    fun onItemLongClicked(position: Int, itemInfo: ItemInfo, holder: GenericViewHolder<*>): Boolean
+    fun onItemLongClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder): Boolean
 }
 
 interface OnSwipeListener {
-    fun onItemSwipe(itemInfo: ItemInfo)
+    fun onItemSwipe(itemInfo: ItemInfo<*>)
 }
 
 interface OnExpandListener {

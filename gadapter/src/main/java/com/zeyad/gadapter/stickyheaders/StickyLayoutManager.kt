@@ -4,7 +4,7 @@ import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import com.zeyad.gadapter.ItemInfo.Companion.SECTION_HEADER
+import com.zeyad.gadapter.GenericAdapter.Companion.SECTION_HEADER
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderListener
 import java.util.*

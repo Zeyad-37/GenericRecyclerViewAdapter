@@ -8,16 +8,16 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class UserDetailState(val isTwoPane: Boolean = false,
                            val user: User = User(),
-                           var repos: List<ItemInfo> = emptyList()) : Parcelable {
+                           var repos: List<ItemInfo<*>> = emptyList()) : Parcelable {
 
     constructor(builder: Builder) : this(builder.isTwoPane, builder.user, builder.repos)
 
     class Builder internal constructor() {
-        internal var repos: List<ItemInfo> = emptyList()
+        internal var repos: List<ItemInfo<*>> = emptyList()
         internal var user: User = User()
         internal var isTwoPane: Boolean = false
 
-        fun setRepos(value: List<ItemInfo>): Builder {
+        fun setRepos(value: List<ItemInfo<*>>): Builder {
             repos = value
             return this
         }

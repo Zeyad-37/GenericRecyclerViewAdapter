@@ -9,14 +9,14 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 
 sealed class UserListState : Parcelable {
-    abstract val list: List<ItemInfo>
+    abstract val list: List<ItemInfo<*>>
     abstract val lastId: Long
     @IgnoredOnParcel
     abstract val callback: DiffUtil.DiffResult
 }
 
 @Parcelize
-data class EmptyState(override val list: List<ItemInfo> = emptyList(),
+data class EmptyState(override val list: List<ItemInfo<*>> = emptyList(),
                       override val lastId: Long = 1
 ) : UserListState(), Parcelable {
     @IgnoredOnParcel
@@ -25,7 +25,7 @@ data class EmptyState(override val list: List<ItemInfo> = emptyList(),
 }
 
 @Parcelize
-data class GetState(override val list: List<ItemInfo> = emptyList(),
+data class GetState(override val list: List<ItemInfo<*>> = emptyList(),
                     override val lastId: Long = 1
 ) : UserListState(), Parcelable {
     @IgnoredOnParcel
