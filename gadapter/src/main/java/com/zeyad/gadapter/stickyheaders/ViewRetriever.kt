@@ -5,7 +5,7 @@ import android.view.ViewGroup
 
 internal interface ViewRetriever {
 
-    fun getViewHolderForPosition(headerPositionToShow: Int): RecyclerView.ViewHolder
+    fun getViewHolderForPosition(headerPositionToShow: Int): RecyclerView.ViewHolder?
 
     class RecyclerViewRetriever internal constructor(private val recyclerView: RecyclerView) : ViewRetriever {
 
@@ -16,14 +16,14 @@ internal interface ViewRetriever {
             this.currentViewType = -1
         }
 
-        override fun getViewHolderForPosition(headerPositionToShow: Int): RecyclerView.ViewHolder {
+        override fun getViewHolderForPosition(headerPositionToShow: Int): RecyclerView.ViewHolder? {
             recyclerView.adapter?.let {
                 if (currentViewType != it.getItemViewType(headerPositionToShow)) {
                     currentViewType = it.getItemViewType(headerPositionToShow)
                     currentViewHolder = it.createViewHolder(recyclerView.parent as ViewGroup, currentViewType)
                 }
                 return currentViewHolder
-            }
+            } ?: run { return null }
         }
     }
 }

@@ -2,8 +2,6 @@ package com.zeyad.gadapter.stickyheaders.exposed
 
 import android.view.View
 
-import com.zeyad.gadapter.stickyheaders.StickyLayoutManager
-
 /**
  * A listener that can be set by calling [StickyLayoutManager.setStickyHeaderListener]
  *

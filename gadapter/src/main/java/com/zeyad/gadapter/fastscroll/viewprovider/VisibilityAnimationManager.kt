@@ -6,9 +6,7 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.support.annotation.AnimatorRes
 import android.view.View
-
 import com.zeyad.gadapter.R
-import com.zeyad.gadapter.fastscroll.FastScroller
 
 /**
  * Animates showing and hiding elements of the [FastScroller] (handle and bubble).

@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.ViewTreeObserver
-
 import com.zeyad.gadapter.R
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderListener
 
@@ -65,7 +64,7 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: Recy
                 lastBoundPosition = INVALID_POSITION
             } else {
                 val viewHolder = viewRetriever.getViewHolderForPosition(headerPositionToShow)
-                attachHeader(viewHolder, headerPositionToShow)
+                viewHolder?.let { attachHeader(it, headerPositionToShow) }
                 lastBoundPosition = headerPositionToShow
             }
         } else if (checkMargins) {
