@@ -23,3 +23,9 @@ A General Purpose adapter, equipped with all kinds of functions and animations.
 9- Drag and Drop
 
 10- ListAdapter support
+
+ToDo:
+
+- Builder Pattern
+- On item content change
+- Fix generics 

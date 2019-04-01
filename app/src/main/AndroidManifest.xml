@@ -1,18 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zeyad.gadapter">
+    package="com.zeyad.app">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:name=".AdapterApplication"
+        android:name="com.zeyad.app.AdapterApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
-            android:name="com.zeyad.gadapter.screens.user.list.UserListActivity"
+            android:name="com.zeyad.app.screens.list.UserListActivity"
             android:label="@string/title_user_list"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -22,12 +21,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.zeyad.gadapter.screens.user.detail.UserDetailActivity"
-            android:parentActivityName=".screens.user.list.UserListActivity"
+            android:name="com.zeyad.app.screens.detail.UserDetailActivity"
+            android:parentActivityName=".screens.list.UserListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".screens.user.detail.UserDetailActivity" />
+                android:value=".screens.detail.UserDetailActivity" />
         </activity>
     </application>
 </manifest>

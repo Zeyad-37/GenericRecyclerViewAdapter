@@ -14,10 +14,10 @@
         tools:context=".screens.user.list.UserListActivity"
         tools:listitem="@layout/user_list_content" />
 
-    <com.zeyad.gadapter.fastscroll.FastScroller
-        android:id="@+id/fastscroll"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:orientation="vertical" />
+    <!--<com.zeyad.gadapter.fastscroll.FastScroller-->
+    <!--android:id="@+id/fastscroll"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:layout_gravity="end"-->
+    <!--android:orientation="vertical" />-->
 </FrameLayout>
