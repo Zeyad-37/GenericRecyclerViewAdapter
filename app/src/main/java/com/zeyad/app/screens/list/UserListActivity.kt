@@ -9,7 +9,10 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.Log
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
@@ -96,7 +99,7 @@ class UserListActivity : BaseActivity<UserListState, UserListEffect, UserListVM>
     }
 
     private fun setupRecyclerView() {
-        usersAdapter = object : GenericRecyclerViewAdapter(getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater) {
+        usersAdapter = object : GenericRecyclerViewAdapter() {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder {
                 return when (viewType) {
                     SECTION_HEADER -> SectionHeaderViewHolder(layoutInflater

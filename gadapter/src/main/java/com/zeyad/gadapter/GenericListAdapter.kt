@@ -3,7 +3,6 @@ package com.zeyad.gadapter
 import android.support.v7.recyclerview.extensions.AsyncDifferConfig
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.zeyad.gadapter.fastscroll.SectionTitleProvider
 import com.zeyad.gadapter.observables.ItemClickObservable
@@ -48,15 +47,13 @@ abstract class GenericListAdapter : ListAdapter<ItemInfo<*>, GenericViewHolder>,
     val selectedItemsIds: List<Long>
         get() = genericAdapter.selectedItemsIds
 
-    val layoutInflater: LayoutInflater
-        get() = genericAdapter.layoutInflater
 
-    protected constructor(diffCallback: DiffUtil.ItemCallback<ItemInfo<*>>, layoutInflater: LayoutInflater) : super(diffCallback) {
-        genericAdapter = GenericAdapter(layoutInflater, this)
+    protected constructor(diffCallback: DiffUtil.ItemCallback<ItemInfo<*>>) : super(diffCallback) {
+        genericAdapter = GenericAdapter(this)
     }
 
-    protected constructor(config: AsyncDifferConfig<ItemInfo<*>>, layoutInflater: LayoutInflater) : super(config) {
-        genericAdapter = GenericAdapter(layoutInflater, this)
+    protected constructor(config: AsyncDifferConfig<ItemInfo<*>>) : super(config) {
+        genericAdapter = GenericAdapter(this)
     }
 
     abstract override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder

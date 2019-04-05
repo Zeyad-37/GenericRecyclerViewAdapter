@@ -2,7 +2,6 @@ package com.zeyad.gadapter
 
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.zeyad.gadapter.fastscroll.SectionTitleProvider
 import com.zeyad.gadapter.observables.ItemClickObservable
@@ -12,7 +11,7 @@ import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
 
-abstract class GenericRecyclerViewAdapter : RecyclerView.Adapter<GenericViewHolder>, ItemTouchHelperAdapter, StickyHeaderHandler {
+abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList()) : RecyclerView.Adapter<GenericViewHolder>(), ItemTouchHelperAdapter, StickyHeaderHandler {
 
     private val genericAdapter: GenericAdapter
 
@@ -58,16 +57,9 @@ abstract class GenericRecyclerViewAdapter : RecyclerView.Adapter<GenericViewHold
     val selectedItemsIds: List<Long>
         get() = genericAdapter.selectedItemsIds
 
-    val layoutInflater: LayoutInflater
-        get() = genericAdapter.layoutInflater
-
-    constructor(layoutInflater: LayoutInflater) {
-        genericAdapter = GenericAdapter(layoutInflater, this)
-    }
-
-    constructor(layoutInflater: LayoutInflater, list: List<ItemInfo<*>>) {
+    init {
         validateList(list)
-        genericAdapter = GenericAdapter(layoutInflater, list, this)
+        genericAdapter = GenericAdapter(list, this)
     }
 
     abstract override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder

@@ -1,6 +1,5 @@
 package com.zeyad.app.screens.detail
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -87,9 +86,7 @@ class UserDetailFragment : BaseFragment<UserDetailState, Unit, UserDetailVM>() {
 
     override fun setupUI(isNew: Boolean) {
         recyclerView_repositories.layoutManager = LinearLayoutManager(context)
-        repositoriesAdapter = object : GenericRecyclerViewAdapter(
-                requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater,
-                ArrayList()) {
+        repositoriesAdapter = object : GenericRecyclerViewAdapter() {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder {
                 return RepositoryViewHolder(layoutInflater.inflate(viewType, parent, false))
             }

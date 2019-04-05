@@ -3,7 +3,6 @@ package com.zeyad.gadapter
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.NO_POSITION
 import android.util.SparseBooleanArray
-import android.view.LayoutInflater
 import com.zeyad.gadapter.fastscroll.SectionTitleProvider
 import com.zeyad.gadapter.observables.ItemClickObservable
 import com.zeyad.gadapter.observables.ItemLongClickObservable
@@ -11,7 +10,7 @@ import com.zeyad.gadapter.observables.ItemSwipeObservable
 import java.util.*
 import kotlin.collections.ArrayList
 
-class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: RecyclerView.Adapter<*>) {
+class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
     private val selectedItems: SparseBooleanArray = SparseBooleanArray()
     private val dataList: MutableList<ItemInfo<*>> = mutableListOf()
     private val expandedPositions: MutableList<Int> = mutableListOf()
@@ -71,7 +70,7 @@ class GenericAdapter(val layoutInflater: LayoutInflater, private val adapter: Re
         this.areItemsClickable = true
     }
 
-    constructor(layoutInflater: LayoutInflater, dataList: List<ItemInfo<*>>, adapter: RecyclerView.Adapter<*>) : this(layoutInflater, adapter) {
+    constructor(dataList: List<ItemInfo<*>>, adapter: RecyclerView.Adapter<*>) : this(adapter) {
         setData(dataList)
     }
 
