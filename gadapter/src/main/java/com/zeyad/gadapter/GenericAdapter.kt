@@ -263,6 +263,6 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
     companion object {
 
         private const val SELECTION_DISABLED = "Selection mode is disabled!"
-        const val SECTION_HEADER = 1
+        const val SECTION_HEADER = Int.MIN_VALUE
     }
 }
