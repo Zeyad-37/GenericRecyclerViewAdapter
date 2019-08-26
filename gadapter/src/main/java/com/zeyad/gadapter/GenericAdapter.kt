@@ -7,8 +7,7 @@ import com.zeyad.gadapter.fastscroll.SectionTitleProvider
 import com.zeyad.gadapter.observables.ItemClickObservable
 import com.zeyad.gadapter.observables.ItemLongClickObservable
 import com.zeyad.gadapter.observables.ItemSwipeObservable
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Collections
 
 class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
     private val selectedItems: SparseBooleanArray = SparseBooleanArray()
@@ -79,36 +78,31 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
         holder.bindData(itemInfo.data, position, selectedItems.get(position, false),
                 itemInfo.isEnabled, expandedPositions.contains(position))
         if (areItemsClickable && !isSectionHeader(position)) {
-            if (onItemClickListener != null) {
-                holder.itemView.setOnClickListener {
-                    val adapterPosition = holder.adapterPosition
-                    if (adapterPosition != NO_POSITION) {
-                        onItemClickListener?.onItemClicked(adapterPosition, itemInfo, holder)
-                    }
-                }
-            }
-            if (onItemLongClickListener != null) {
-                holder.itemView.setOnLongClickListener {
-                    val adapterPosition = holder.adapterPosition
-                    adapterPosition != NO_POSITION && onItemLongClickListener?.onItemLongClicked(adapterPosition, itemInfo, holder)!!
-                }
-            }
-        }
-        if (areItemsExpandable && holder is OnExpandListener) {
-            holder.expand(expandedPositions.contains(position))
-            holder.itemView.isActivated = true
             holder.itemView.setOnClickListener {
                 val adapterPosition = holder.adapterPosition
-                if (expandedPositions.contains(adapterPosition)) {
-                    for (i in expandedPositions.indices) {
-                        if (expandedPositions[i] == adapterPosition) {
-                            expandedPositions.removeAt(i)
+                if (areItemsExpandable && holder is OnExpandListener) {
+                    holder.expand(expandedPositions.contains(position))
+                    holder.itemView.isActivated = true
+                    if (expandedPositions.contains(adapterPosition)) {
+                        for (i in expandedPositions.indices) {
+                            if (expandedPositions[i] == adapterPosition) {
+                                expandedPositions.removeAt(i)
+                                break
+                            }
                         }
+                    } else {
+                        expandedPositions.add(adapterPosition)
                     }
-                } else {
-                    expandedPositions.add(adapterPosition)
+                    adapter.notifyItemChanged(adapterPosition)
+                } else if (adapterPosition > NO_POSITION) {
+                    onItemClickListener?.onItemClicked(adapterPosition, itemInfo, holder)
                 }
-                adapter.notifyItemChanged(adapterPosition)
+            }
+            holder.itemView.setOnLongClickListener {
+                val adapterPosition = holder.adapterPosition
+                onItemLongClickListener?.let {
+                    it.onItemLongClicked(adapterPosition, itemInfo, holder) && adapterPosition != NO_POSITION
+                } ?: run { false }
             }
         }
     }
