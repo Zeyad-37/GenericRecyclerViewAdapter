@@ -1,6 +1,10 @@
 package com.zeyad.gadapter.observables
 
-import com.zeyad.gadapter.*
+import com.zeyad.gadapter.GenericAdapter
+import com.zeyad.gadapter.GenericViewHolder
+import com.zeyad.gadapter.ItemInfo
+import com.zeyad.gadapter.OnItemClickListener
+import com.zeyad.gadapter.checkMainThread
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable
@@ -21,7 +25,7 @@ class ItemClickObservable(private val genericRecyclerViewAdapter: GenericAdapter
 
         init {
             this.onItemClickListener = object : OnItemClickListener {
-                override fun onItemClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder) {
+                override fun onItemClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder<*>) {
                     if (!isDisposed) {
                         observer.onNext(ClickEvent(position, itemInfo, holder))
                     }

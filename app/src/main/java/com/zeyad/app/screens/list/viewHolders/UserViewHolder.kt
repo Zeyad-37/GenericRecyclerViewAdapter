@@ -9,9 +9,8 @@ import com.zeyad.app.screens.User
 import com.zeyad.gadapter.GenericViewHolder
 import kotlinx.android.synthetic.main.user_item_layout.view.*
 
-class UserViewHolder(itemView: View) : GenericViewHolder(itemView) {
-    override fun <T> bindData(t: T, position: Int, isItemSelected: Boolean, isEnabled: Boolean, isExpanded: Boolean) {
-        val data = t as User
+class UserViewHolder(itemView: View) : GenericViewHolder<User>(itemView) {
+    override fun bindData(data: User, position: Int, isItemSelected: Boolean, isEnabled: Boolean, isExpanded: Boolean) {
         if (data.avatarUrl.isNotEmpty()) {
             Glide.with(itemView.context).load(data.avatarUrl).into(itemView.avatar)
         } else {

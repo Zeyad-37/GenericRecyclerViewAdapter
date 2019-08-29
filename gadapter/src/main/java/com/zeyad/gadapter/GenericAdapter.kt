@@ -73,13 +73,13 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
         setData(dataList)
     }
 
-    fun onBindViewHolder(holder: GenericViewHolder, position: Int) {
+    fun onBindViewHolder(holder: GenericViewHolder<Any>, position: Int) {
         val itemInfo = dataList[position]
         holder.bindData(itemInfo.data, position, selectedItems.get(position, false),
                 itemInfo.isEnabled, expandedPositions.contains(position))
         if (areItemsClickable && !isSectionHeader(position)) {
+            val adapterPosition = holder.adapterPosition
             holder.itemView.setOnClickListener {
-                val adapterPosition = holder.adapterPosition
                 if (areItemsExpandable && holder is OnExpandListener) {
                     holder.expand(expandedPositions.contains(position))
                     holder.itemView.isActivated = true
@@ -99,7 +99,6 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
                 }
             }
             holder.itemView.setOnLongClickListener {
-                val adapterPosition = holder.adapterPosition
                 onItemLongClickListener?.let {
                     it.onItemLongClicked(adapterPosition, itemInfo, holder) && adapterPosition != NO_POSITION
                 } ?: run { false }

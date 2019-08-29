@@ -89,7 +89,7 @@ class UserDetailFragment2(override var viewModel: UserDetailVM?,
     override fun setupUI(isNew: Boolean) {
         recyclerView_repositories.layoutManager = LinearLayoutManager(context)
         repositoriesAdapter = object : GenericRecyclerViewAdapter() {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder<*> {
                 return RepositoryViewHolder(layoutInflater.inflate(viewType, parent, false))
             }
         }

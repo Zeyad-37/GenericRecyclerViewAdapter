@@ -11,7 +11,7 @@ import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
 
-abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList()) : RecyclerView.Adapter<GenericViewHolder>(), ItemTouchHelperAdapter, StickyHeaderHandler {
+abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList()) : RecyclerView.Adapter<GenericViewHolder<*>>(), ItemTouchHelperAdapter, StickyHeaderHandler {
 
     private val genericAdapter: GenericAdapter
 
@@ -62,10 +62,10 @@ abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList())
         genericAdapter = GenericAdapter(list, this)
     }
 
-    abstract override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder
+    abstract override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder<*>
 
-    override fun onBindViewHolder(holder: GenericViewHolder, position: Int) {
-        genericAdapter.onBindViewHolder(holder, position)
+    override fun onBindViewHolder(holder: GenericViewHolder<*>, position: Int) {
+        genericAdapter.onBindViewHolder(holder as GenericViewHolder<Any>, position)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -184,9 +184,7 @@ abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList())
     }
 
     private fun validateList(dataList: List<ItemInfo<*>>?) {
-        if (dataList == null) {
-            throw IllegalArgumentException("The list cannot be null")
-        }
+        requireNotNull(dataList) { "The list cannot be null" }
     }
 
     fun setDataList(dataList: List<ItemInfo<*>>, diffResult: DiffUtil.DiffResult?) {

@@ -1,6 +1,10 @@
 package com.zeyad.gadapter.observables
 
-import com.zeyad.gadapter.*
+import com.zeyad.gadapter.GenericAdapter
+import com.zeyad.gadapter.GenericViewHolder
+import com.zeyad.gadapter.ItemInfo
+import com.zeyad.gadapter.OnItemLongClickListener
+import com.zeyad.gadapter.checkMainThread
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable
@@ -21,7 +25,7 @@ class ItemLongClickObservable(private val genericRecyclerViewAdapter: GenericAda
 
         init {
             this.onItemLongClickListener = object : OnItemLongClickListener {
-                override fun onItemLongClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder): Boolean {
+                override fun onItemLongClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder<*>): Boolean {
                     if (!isDisposed) {
                         observer.onNext(ClickEvent(position, itemInfo, holder))
                     }

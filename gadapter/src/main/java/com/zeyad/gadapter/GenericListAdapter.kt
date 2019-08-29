@@ -10,7 +10,7 @@ import com.zeyad.gadapter.observables.ItemLongClickObservable
 import com.zeyad.gadapter.observables.ItemSwipeObservable
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler
 
-abstract class GenericListAdapter : ListAdapter<ItemInfo<*>, GenericViewHolder>, ItemTouchHelperAdapter, StickyHeaderHandler {
+abstract class GenericListAdapter : ListAdapter<ItemInfo<*>, GenericViewHolder<*>>, ItemTouchHelperAdapter, StickyHeaderHandler {
 
     private val genericAdapter: GenericAdapter
 
@@ -56,10 +56,10 @@ abstract class GenericListAdapter : ListAdapter<ItemInfo<*>, GenericViewHolder>,
         genericAdapter = GenericAdapter(this)
     }
 
-    abstract override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder
+    abstract override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder<*>
 
-    override fun onBindViewHolder(holder: GenericViewHolder, position: Int) {
-        genericAdapter.onBindViewHolder(holder, position)
+    override fun onBindViewHolder(holder: GenericViewHolder<*>, position: Int) {
+        genericAdapter.onBindViewHolder(holder as GenericViewHolder<Any>, position)
     }
 
     override fun getItemViewType(position: Int): Int {

@@ -28,8 +28,14 @@ import com.zeyad.app.utils.addFragment
 import com.zeyad.app.utils.hasLollipop
 import com.zeyad.app.utils.removeFragment
 import com.zeyad.app.utils.showErrorSnackBarWithAction
-import com.zeyad.gadapter.*
 import com.zeyad.gadapter.GenericAdapter.Companion.SECTION_HEADER
+import com.zeyad.gadapter.GenericRecyclerViewAdapter
+import com.zeyad.gadapter.GenericViewHolder
+import com.zeyad.gadapter.ItemInfo
+import com.zeyad.gadapter.OnItemClickListener
+import com.zeyad.gadapter.OnItemLongClickListener
+import com.zeyad.gadapter.OnStartDragListener
+import com.zeyad.gadapter.SimpleItemTouchHelperCallback
 import com.zeyad.rxredux.core.BaseEvent
 import com.zeyad.rxredux.core.Message
 import com.zeyad.rxredux.core.getErrorMessage
@@ -100,7 +106,7 @@ class UserListActivity : BaseActivity<UserListState, UserListEffect, UserListVM>
 
     private fun setupRecyclerView() {
         usersAdapter = object : GenericRecyclerViewAdapter() {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder<*> {
                 return when (viewType) {
                     SECTION_HEADER -> SectionHeaderViewHolder(layoutInflater
                             .inflate(R.layout.section_header_layout, parent, false))
@@ -113,8 +119,9 @@ class UserListActivity : BaseActivity<UserListState, UserListEffect, UserListVM>
             }
         }
         usersAdapter.setAreItemsClickable(true)
+        usersAdapter.setAreItemsExpandable(true)
         usersAdapter.setOnItemClickListener(object : OnItemClickListener {
-            override fun onItemClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder) {
+            override fun onItemClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder<*>) {
                 if (actionMode != null) {
                     toggleItemSelection(position)
                 } else if (itemInfo.data is User) {
@@ -153,7 +160,7 @@ class UserListActivity : BaseActivity<UserListState, UserListEffect, UserListVM>
             }
         })
         usersAdapter.setOnItemLongClickListener(object : OnItemLongClickListener {
-            override fun onItemLongClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder): Boolean {
+            override fun onItemLongClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder<*>): Boolean {
                 if (usersAdapter.isSelectionAllowed) {
                     actionMode = startSupportActionMode(this@UserListActivity)
                     toggleItemSelection(position)
