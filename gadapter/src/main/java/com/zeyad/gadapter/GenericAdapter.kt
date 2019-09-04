@@ -75,30 +75,30 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
 
     fun onBindViewHolder(holder: GenericViewHolder<Any>, position: Int) {
         val itemInfo = dataList[position]
-        holder.bindData(itemInfo.data, position, selectedItems.get(position, false),
-                itemInfo.isEnabled, expandedPositions.contains(position))
+        holder.bindData(itemInfo.data, position, selectedItems.get(position, false), itemInfo.isEnabled)
         if (areItemsClickable && !isSectionHeader(position)) {
-            val adapterPosition = holder.adapterPosition
             holder.itemView.setOnClickListener {
+                val adapterPosition = holder.adapterPosition
                 if (areItemsExpandable && holder is OnExpandListener) {
-                    holder.expand(expandedPositions.contains(position))
                     holder.itemView.isActivated = true
                     if (expandedPositions.contains(adapterPosition)) {
-                        for (i in expandedPositions.indices) {
-                            if (expandedPositions[i] == adapterPosition) {
-                                expandedPositions.removeAt(i)
+                        for (index in expandedPositions) {
+                            if (index == adapterPosition) {
+                                expandedPositions.remove(index)
                                 break
                             }
                         }
                     } else {
                         expandedPositions.add(adapterPosition)
                     }
-                    adapter.notifyItemChanged(adapterPosition)
+                    holder.expand(expandedPositions.contains(adapterPosition))
+                    adapter.notifyItemChanged(adapterPosition, expandedPositions.contains(adapterPosition))
                 } else if (adapterPosition > NO_POSITION) {
                     onItemClickListener?.onItemClicked(adapterPosition, itemInfo, holder)
                 }
             }
             holder.itemView.setOnLongClickListener {
+                val adapterPosition = holder.adapterPosition
                 onItemLongClickListener?.let {
                     it.onItemLongClicked(adapterPosition, itemInfo, holder) && adapterPosition != NO_POSITION
                 } ?: run { false }
