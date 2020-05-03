@@ -1,8 +1,7 @@
 package com.zeyad.gadapter
 
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import com.zeyad.gadapter.fastscroll.SectionTitleProvider
 import com.zeyad.gadapter.observables.ItemClickObservable
 import com.zeyad.gadapter.observables.ItemLongClickObservable
@@ -11,7 +10,7 @@ import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
 
-abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList()) : RecyclerView.Adapter<GenericViewHolder<*>>(), ItemTouchHelperAdapter, StickyHeaderHandler {
+abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList()) : androidx.recyclerview.widget.RecyclerView.Adapter<GenericViewHolder<*>>(), ItemTouchHelperAdapter, StickyHeaderHandler {
 
     private val genericAdapter: GenericAdapter
 

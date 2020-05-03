@@ -1,9 +1,6 @@
 package com.zeyad.gadapter.fastscroll
 
 import android.content.Context
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v4.widget.TextViewCompat
-import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -11,6 +8,9 @@ import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.widget.TextViewCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.zeyad.gadapter.GenericListAdapter
 import com.zeyad.gadapter.GenericRecyclerViewAdapter
 import com.zeyad.gadapter.R
@@ -19,7 +19,7 @@ import com.zeyad.gadapter.fastscroll.viewprovider.ScrollerViewProvider
 
 class FastScroller @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : LinearLayout(context, attrs, defStyle) {
     private val scrollListener = RecyclerViewScrollListener(this)
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
 
     private lateinit var bubble: View
     private lateinit var handle: View
@@ -90,7 +90,7 @@ class FastScroller @JvmOverloads constructor(context: Context, attrs: AttributeS
      *
      * @param recyclerView A [RecyclerView] to attach the [FastScroller] to.
      */
-    fun setRecyclerView(recyclerView: RecyclerView) {
+    fun setRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
         this.recyclerView = recyclerView
         val adapter = recyclerView.adapter
         if (adapter is GenericRecyclerViewAdapter)

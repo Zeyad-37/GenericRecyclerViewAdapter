@@ -1,7 +1,7 @@
 package com.zeyad.app.screens.list
 
 import android.os.Parcelable
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 import com.zeyad.app.screens.UserDiffCallBack
 import com.zeyad.gadapter.ItemInfo
 import kotlinx.android.parcel.IgnoredOnParcel

@@ -1,11 +1,11 @@
 package com.zeyad.gadapter.fastscroll.viewprovider
 
 import android.graphics.drawable.InsetDrawable
-import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.zeyad.gadapter.R
 import com.zeyad.gadapter.fastscroll.setBackground
 

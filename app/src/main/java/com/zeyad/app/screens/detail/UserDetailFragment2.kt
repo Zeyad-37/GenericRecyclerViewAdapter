@@ -3,13 +3,11 @@ package com.zeyad.app.screens.detail
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.Toolbar
 import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.RequestListener
@@ -35,7 +33,7 @@ import org.koin.android.viewmodel.ext.android.getViewModel
  */
 @SuppressLint("ValidFragment")
 class UserDetailFragment2(override var viewModel: UserDetailVM?,
-                          override var viewState: UserDetailState?) : Fragment(), IBaseFragment<UserDetailState, Unit, UserDetailVM> {
+                          override var viewState: UserDetailState?) : androidx.fragment.app.Fragment(), IBaseFragment<UserDetailState, Unit, UserDetailVM> {
     override fun applyEffect(effectBundle: Unit) {
     }
 
@@ -87,7 +85,7 @@ class UserDetailFragment2(override var viewModel: UserDetailVM?,
     }
 
     override fun setupUI(isNew: Boolean) {
-        recyclerView_repositories.layoutManager = LinearLayoutManager(context)
+        recyclerView_repositories.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         repositoriesAdapter = object : GenericRecyclerViewAdapter() {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder<*> {
                 return RepositoryViewHolder(layoutInflater.inflate(viewType, parent, false))

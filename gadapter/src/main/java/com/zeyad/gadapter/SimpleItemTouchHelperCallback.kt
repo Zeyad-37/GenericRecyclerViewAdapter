@@ -1,22 +1,19 @@
 package com.zeyad.gadapter
 
 import android.graphics.Canvas
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.StaggeredGridLayoutManager
-import android.support.v7.widget.helper.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper
 
 class SimpleItemTouchHelperCallback(private val mAdapter: ItemTouchHelperAdapter) : ItemTouchHelper.Callback() {
 
-    override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+    override fun getMovementFlags(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
         // Set movement flags based on the layout manager
         return when {
-            recyclerView.layoutManager is GridLayoutManager -> {
+            recyclerView.layoutManager is androidx.recyclerview.widget.GridLayoutManager -> {
                 val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
                 val swipeFlags = 0
                 ItemTouchHelper.Callback.makeMovementFlags(dragFlags, swipeFlags)
             }
-            recyclerView.layoutManager is StaggeredGridLayoutManager -> {
+            recyclerView.layoutManager is androidx.recyclerview.widget.StaggeredGridLayoutManager -> {
                 val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
                 val swipeFlags = 0
                 ItemTouchHelper.Callback.makeMovementFlags(dragFlags, swipeFlags)
@@ -29,7 +26,7 @@ class SimpleItemTouchHelperCallback(private val mAdapter: ItemTouchHelperAdapter
         }
     }
 
-    override fun onMove(recyclerView: RecyclerView, source: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+    override fun onMove(recyclerView: androidx.recyclerview.widget.RecyclerView, source: androidx.recyclerview.widget.RecyclerView.ViewHolder, target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
         return if (source.itemViewType != target.itemViewType) {
             false
         } else mAdapter.onItemMove(source.adapterPosition, target.adapterPosition)
@@ -41,12 +38,12 @@ class SimpleItemTouchHelperCallback(private val mAdapter: ItemTouchHelperAdapter
 
     override fun isItemViewSwipeEnabled(): Boolean = true
 
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {
+    override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, i: Int) {
         // Notify the adapter of the dismissal
         mAdapter.onItemDismiss(viewHolder.adapterPosition)
     }
 
-    override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+    override fun onSelectedChanged(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder?, actionState: Int) {
         // We only want the active item to change
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
             if (viewHolder is ItemTouchHelperViewHolder) {
@@ -58,7 +55,7 @@ class SimpleItemTouchHelperCallback(private val mAdapter: ItemTouchHelperAdapter
         super.onSelectedChanged(viewHolder, actionState)
     }
 
-    override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+    override fun clearView(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
         viewHolder.itemView.alpha = ALPHA_FULL
         if (viewHolder is ItemTouchHelperViewHolder) {
@@ -69,8 +66,8 @@ class SimpleItemTouchHelperCallback(private val mAdapter: ItemTouchHelperAdapter
     }
 
     override fun onChildDraw(c: Canvas,
-                             recyclerView: RecyclerView,
-                             viewHolder: RecyclerView.ViewHolder,
+                             recyclerView: androidx.recyclerview.widget.RecyclerView,
+                             viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
                              dX: Float,
                              dY: Float,
                              actionState: Int,

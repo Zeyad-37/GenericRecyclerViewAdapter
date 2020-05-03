@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/GenericRecyclerViewAdapter.iml" filepath="$PROJECT_DIR$/.idea/GenericRecyclerViewAdapter.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/gadapter/gadapter.iml" filepath="$PROJECT_DIR$/gadapter/gadapter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/GenericRecyclerViewAdapter.iml" filepath="$PROJECT_DIR$/.idea/GenericRecyclerViewAdapter.iml" group="GenericRecyclerViewAdapter" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="GenericRecyclerViewAdapter/app" />
+      <module fileurl="file://$PROJECT_DIR$/gadapter/gadapter.iml" filepath="$PROJECT_DIR$/gadapter/gadapter.iml" group="GenericRecyclerViewAdapter/gadapter" />
     </modules>
   </component>
 </project>

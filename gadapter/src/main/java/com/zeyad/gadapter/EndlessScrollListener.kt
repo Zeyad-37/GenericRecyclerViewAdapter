@@ -1,12 +1,8 @@
 package com.zeyad.gadapter
 
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.StaggeredGridLayoutManager
 import android.util.Log
 
-abstract class EndlessScrollListener : RecyclerView.OnScrollListener {
+abstract class EndlessScrollListener : androidx.recyclerview.widget.RecyclerView.OnScrollListener {
     // The minimum amount of items to have below your current scroll position
     // before loading more.
     //set visibleThreshold   default: 5
@@ -25,7 +21,7 @@ abstract class EndlessScrollListener : RecyclerView.OnScrollListener {
     // Sets the  footerViewType
     private val defaultNoFooterViewType = -1
     private var footerViewType = -1
-    private var mLayoutManager: RecyclerView.LayoutManager? = null
+    private var mLayoutManager: androidx.recyclerview.widget.RecyclerView.LayoutManager? = null
 
     private val isUseFooterView: Boolean
         get() = footerViewType != defaultNoFooterViewType
@@ -34,29 +30,29 @@ abstract class EndlessScrollListener : RecyclerView.OnScrollListener {
     val lastVisibleItemPosition: Int
         get() {
             return when (mLayoutManager) {
-                is StaggeredGridLayoutManager -> {
-                    val lastVisibleItemPositions = (mLayoutManager as StaggeredGridLayoutManager).findLastVisibleItemPositions(null)
+                is androidx.recyclerview.widget.StaggeredGridLayoutManager -> {
+                    val lastVisibleItemPositions = (mLayoutManager as androidx.recyclerview.widget.StaggeredGridLayoutManager).findLastVisibleItemPositions(null)
                     getLastVisibleItem(lastVisibleItemPositions)
                 }
-                is LinearLayoutManager -> (mLayoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-                is GridLayoutManager -> (mLayoutManager as GridLayoutManager).findLastVisibleItemPosition()
+                is androidx.recyclerview.widget.LinearLayoutManager -> (mLayoutManager as androidx.recyclerview.widget.LinearLayoutManager).findLastVisibleItemPosition()
+                is androidx.recyclerview.widget.GridLayoutManager -> (mLayoutManager as androidx.recyclerview.widget.GridLayoutManager).findLastVisibleItemPosition()
                 else -> 0
             }
         }
 
-    constructor(layoutManager: LinearLayoutManager, visibleThreshold: Int) {
+    constructor(layoutManager: androidx.recyclerview.widget.LinearLayoutManager, visibleThreshold: Int) {
         init()
         mLayoutManager = layoutManager
         this.visibleThreshold = visibleThreshold
     }
 
-    constructor(layoutManager: GridLayoutManager) {
+    constructor(layoutManager: androidx.recyclerview.widget.GridLayoutManager) {
         init()
         mLayoutManager = layoutManager
         visibleThreshold *= layoutManager.spanCount
     }
 
-    constructor(layoutManager: StaggeredGridLayoutManager) {
+    constructor(layoutManager: androidx.recyclerview.widget.StaggeredGridLayoutManager) {
         init()
         mLayoutManager = layoutManager
         visibleThreshold *= layoutManager.spanCount
@@ -75,7 +71,7 @@ abstract class EndlessScrollListener : RecyclerView.OnScrollListener {
     // This happens many times a second during a scroll, so be wary of the code you place here.
     // We are given a few useful parameters to help us work out if we need to load some more data,
     // but first we check if we are waiting for the previous load to finish.
-    override fun onScrolled(view: RecyclerView, dx: Int, dy: Int) {
+    override fun onScrolled(view: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
         // when dy=0---->list is clear totalItemCount == 0 or init load  previousTotalItemCount=0
         if (dy <= 0) return
         //        Log.i(TAG, "onScrolled-------dy:" + dy);
@@ -112,7 +108,7 @@ abstract class EndlessScrollListener : RecyclerView.OnScrollListener {
         }
     }
 
-    fun isFooterView(padapter: RecyclerView.Adapter<*>): Boolean {
+    fun isFooterView(padapter: androidx.recyclerview.widget.RecyclerView.Adapter<*>): Boolean {
         var isFooterView = false
         val ptotalItemCount = padapter.itemCount
         if (ptotalItemCount > 0) {

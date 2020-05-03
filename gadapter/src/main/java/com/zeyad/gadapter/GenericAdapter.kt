@@ -1,15 +1,14 @@
 package com.zeyad.gadapter
 
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.NO_POSITION
 import android.util.SparseBooleanArray
+import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import com.zeyad.gadapter.fastscroll.SectionTitleProvider
 import com.zeyad.gadapter.observables.ItemClickObservable
 import com.zeyad.gadapter.observables.ItemLongClickObservable
 import com.zeyad.gadapter.observables.ItemSwipeObservable
 import java.util.Collections
 
-class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
+class GenericAdapter(private val adapter: androidx.recyclerview.widget.RecyclerView.Adapter<*>) {
     private val selectedItems: SparseBooleanArray = SparseBooleanArray()
     private val dataList: MutableList<ItemInfo<*>> = mutableListOf()
     private val expandedPositions: MutableList<Int> = mutableListOf()
@@ -69,7 +68,7 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
         this.areItemsClickable = true
     }
 
-    constructor(dataList: List<ItemInfo<*>>, adapter: RecyclerView.Adapter<*>) : this(adapter) {
+    constructor(dataList: List<ItemInfo<*>>, adapter: androidx.recyclerview.widget.RecyclerView.Adapter<*>) : this(adapter) {
         setData(dataList)
     }
 

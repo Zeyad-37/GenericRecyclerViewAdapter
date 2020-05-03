@@ -13,7 +13,7 @@
 
     <!-- This layout is a two-pane layout for the Users master/detail flow. -->
 
-    <android.support.v7.widget.RecyclerView android:id="@+id/user_list"
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/user_list"
         android:name="com.zeyad.usecases.app.presentation.RepoListFragment"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"

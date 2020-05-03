@@ -1,7 +1,5 @@
 package com.zeyad.gadapter
 
-import android.support.v7.widget.RecyclerView
-
 interface OnItemClickListener {
     fun onItemClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder<*>)
 }
@@ -24,5 +22,5 @@ interface OnStartDragListener {
      *
      * @param viewHolder The holder of the view to drag.
      */
-    fun onStartDrag(viewHolder: RecyclerView.ViewHolder)
+    fun onStartDrag(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder)
 }

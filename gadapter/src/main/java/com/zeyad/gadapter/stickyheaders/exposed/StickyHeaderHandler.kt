@@ -1,6 +1,6 @@
 package com.zeyad.gadapter.stickyheaders.exposed
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 
 import com.zeyad.gadapter.ItemInfo
 
