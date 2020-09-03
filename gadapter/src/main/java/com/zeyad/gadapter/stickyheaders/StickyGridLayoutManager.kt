@@ -2,13 +2,17 @@ package com.zeyad.gadapter.stickyheaders
 
 import android.content.Context
 import android.view.View
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.zeyad.gadapter.GenericAdapter.Companion.SECTION_HEADER
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderListener
 import java.util.LinkedHashMap
+import kotlin.math.abs
 
-class StickyGridLayoutManager(context: Context, spanCount: Int, orientation: Int,
-                              reverseLayout: Boolean, headerHandler: StickyHeaderHandler) : androidx.recyclerview.widget.GridLayoutManager(context, spanCount, orientation, reverseLayout) {
+class StickyGridLayoutManager(context: Context, spanCount: Int, orientation: Int, reverseLayout: Boolean,
+                              headerHandler: StickyHeaderHandler
+) : GridLayoutManager(context, spanCount, orientation, reverseLayout) {
 
     private lateinit var positioner: StickyHeaderPositioner
     private lateinit var headerHandler: StickyHeaderHandler
@@ -74,7 +78,7 @@ class StickyGridLayoutManager(context: Context, spanCount: Int, orientation: Int
         headerPositions.clear()
     }
 
-    override fun onLayoutChildren(recycler: androidx.recyclerview.widget.RecyclerView.Recycler?, state: androidx.recyclerview.widget.RecyclerView.State) {
+    override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State) {
         super.onLayoutChildren(recycler, state)
         cacheHeaderPositions()
         positioner.reset(orientation, findFirstVisibleItemPosition())
@@ -82,16 +86,16 @@ class StickyGridLayoutManager(context: Context, spanCount: Int, orientation: Int
                 findFirstVisibleItemPosition(), visibleHeaders, viewRetriever)
     }
 
-    override fun scrollHorizontallyBy(dx: Int, recycler: androidx.recyclerview.widget.RecyclerView.Recycler?, state: androidx.recyclerview.widget.RecyclerView.State?): Int {
+    override fun scrollHorizontallyBy(dx: Int, recycler: RecyclerView.Recycler?, state: RecyclerView.State?): Int {
         val scroll = super.scrollHorizontallyBy(dx, recycler, state)
-        if (Math.abs(scroll) > 0) {
+        if (abs(scroll) > 0) {
             positioner.updateHeaderState(
                     findFirstVisibleItemPosition(), visibleHeaders, viewRetriever)
         }
         return scroll
     }
 
-    override fun scrollVerticallyBy(dy: Int, recycler: androidx.recyclerview.widget.RecyclerView.Recycler?, state: androidx.recyclerview.widget.RecyclerView.State?): Int {
+    override fun scrollVerticallyBy(dy: Int, recycler: RecyclerView.Recycler?, state: RecyclerView.State?): Int {
         val scroll = super.scrollVerticallyBy(dy, recycler, state)
         if (Math.abs(scroll) > 0) {
             positioner.updateHeaderState(
@@ -121,7 +125,7 @@ class StickyGridLayoutManager(context: Context, spanCount: Int, orientation: Int
         positioner.setListener(listener)
     }
 
-    override fun onAttachedToWindow(view: androidx.recyclerview.widget.RecyclerView?) {
+    override fun onAttachedToWindow(view: RecyclerView?) {
         super.onAttachedToWindow(view)
         view?.let {
             viewRetriever = ViewRetriever.RecyclerViewRetriever(view)
@@ -131,7 +135,7 @@ class StickyGridLayoutManager(context: Context, spanCount: Int, orientation: Int
         }
     }
 
-    override fun removeAndRecycleAllViews(recycler: androidx.recyclerview.widget.RecyclerView.Recycler) {
+    override fun removeAndRecycleAllViews(recycler: RecyclerView.Recycler) {
         super.removeAndRecycleAllViews(recycler)
         positioner.clearHeader()
     }

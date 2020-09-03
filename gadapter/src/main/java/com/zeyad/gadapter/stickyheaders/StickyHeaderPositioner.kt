@@ -9,14 +9,16 @@ import android.view.ViewTreeObserver
 import androidx.annotation.Px
 import androidx.annotation.VisibleForTesting
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.zeyad.gadapter.R
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderListener
 
-class StickyHeaderPositioner internal constructor(private val recyclerView: androidx.recyclerview.widget.RecyclerView) {
+class StickyHeaderPositioner internal constructor(private val recyclerView: RecyclerView) {
     private val checkMargins: Boolean
     private val fallbackReset: Boolean
 
     private var currentHeader: View? = null
+
     @get:VisibleForTesting
     internal var lastBoundPosition = INVALID_POSITION
         private set
@@ -26,7 +28,7 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: andr
     private var headerElevation = NO_ELEVATION.toFloat()
     private var cachedElevation = NO_ELEVATION
     private var updateCurrentHeader: Boolean = false
-    private var currentViewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder? = null
+    private var currentViewHolder: RecyclerView.ViewHolder? = null
     private var listener: StickyHeaderListener? = null
 
     private val recyclerParent: ViewGroup
@@ -37,7 +39,7 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: andr
         if (recyclerView.adapter != null) {
             fallbackReset = false
             recyclerView.adapter?.registerAdapterDataObserver(
-                    object : androidx.recyclerview.widget.RecyclerView.AdapterDataObserver() {
+                    object : RecyclerView.AdapterDataObserver() {
                         override fun onChanged() {
                             updateCurrentHeader = true
                         }
@@ -107,7 +109,7 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: andr
         val shouldOffsetHeader = shouldOffsetHeader(nextHeader)
         var offset = -1f
         if (shouldOffsetHeader) {
-            if (orientation == androidx.recyclerview.widget.LinearLayoutManager.VERTICAL) {
+            if (orientation == LinearLayoutManager.VERTICAL) {
                 offset = -(currentHeader?.height!! - nextHeader.y)
                 currentHeader?.translationY = offset
             } else {
@@ -119,7 +121,7 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: andr
     }
 
     private fun shouldOffsetHeader(nextHeader: View): Boolean {
-        return if (orientation == androidx.recyclerview.widget.LinearLayoutManager.VERTICAL) {
+        return if (orientation == LinearLayoutManager.VERTICAL) {
             nextHeader.y < currentHeader?.height!!
         } else {
             nextHeader.x < currentHeader?.width!!
@@ -127,7 +129,7 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: andr
     }
 
     private fun resetTranslation() {
-        if (orientation == androidx.recyclerview.widget.LinearLayoutManager.VERTICAL) {
+        if (orientation == LinearLayoutManager.VERTICAL) {
             currentHeader?.translationY = 0f
         } else {
             currentHeader?.translationX = 0f
@@ -167,7 +169,7 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: andr
 
     private fun headerIsOffset(headerForPosition: View?): Boolean {
         return if (headerForPosition != null) {
-            if (orientation == androidx.recyclerview.widget.LinearLayoutManager.VERTICAL)
+            if (orientation == LinearLayoutManager.VERTICAL)
                 headerForPosition.y > 0
             else
                 headerForPosition.x > 0
@@ -175,7 +177,7 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: andr
     }
 
     @VisibleForTesting
-    internal fun attachHeader(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, headerPosition: Int) {
+    internal fun attachHeader(viewHolder: RecyclerView.ViewHolder, headerPosition: Int) {
         if (currentViewHolder === viewHolder) {
             callDetach(lastBoundPosition)
             recyclerView.adapter?.onBindViewHolder(currentViewHolder!!, headerPosition)
@@ -202,8 +204,8 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: andr
 
     private fun checkElevation() {
         if (headerElevation != NO_ELEVATION.toFloat()) {
-            if (orientation == androidx.recyclerview.widget.LinearLayoutManager.VERTICAL && currentHeader?.translationY == 0f ||
-                    orientation == androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL && currentHeader?.translationX == 0f) {
+            if (orientation == LinearLayoutManager.VERTICAL && currentHeader?.translationY == 0f ||
+                    orientation == LinearLayoutManager.HORIZONTAL && currentHeader?.translationX == 0f) {
                 elevateHeader()
             } else {
                 settleHeader()
@@ -223,11 +225,9 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: andr
     }
 
     private fun settleHeader() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (currentHeader?.tag != null) {
-                currentHeader?.tag = null
-                currentHeader?.animate()?.z(0f)
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && currentHeader?.tag != null) {
+            currentHeader?.tag = null
+            currentHeader?.animate()?.z(0f)
         }
     }
 
@@ -260,15 +260,15 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: andr
     }
 
     private fun matchMarginsToPadding(layoutParams: MarginLayoutParams) {
-        @Px val leftMargin = if (orientation == androidx.recyclerview.widget.LinearLayoutManager.VERTICAL)
+        @Px val leftMargin = if (orientation == LinearLayoutManager.VERTICAL)
             recyclerView.paddingLeft
         else
             0
-        @Px val topMargin = if (orientation == androidx.recyclerview.widget.LinearLayoutManager.VERTICAL)
+        @Px val topMargin = if (orientation == LinearLayoutManager.VERTICAL)
             0
         else
             recyclerView.paddingTop
-        @Px val rightMargin = if (orientation == androidx.recyclerview.widget.LinearLayoutManager.VERTICAL)
+        @Px val rightMargin = if (orientation == LinearLayoutManager.VERTICAL)
             recyclerView.paddingRight
         else
             0
@@ -277,7 +277,7 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: andr
 
     private fun headerAwayFromEdge(headerToCopy: View?): Boolean {
         return if (headerToCopy != null) {
-            if (orientation == androidx.recyclerview.widget.LinearLayoutManager.VERTICAL)
+            if (orientation == LinearLayoutManager.VERTICAL)
                 headerToCopy.y > 0
             else
                 headerToCopy.x > 0
@@ -299,11 +299,8 @@ class StickyHeaderPositioner internal constructor(private val recyclerView: andr
         detachHeader(lastBoundPosition)
     }
 
-    private fun recyclerViewHasPadding(): Boolean {
-        return (recyclerView.paddingLeft > 0
-                || recyclerView.paddingRight > 0
-                || recyclerView.paddingTop > 0)
-    }
+    private fun recyclerViewHasPadding(): Boolean =
+            (recyclerView.paddingLeft > 0 || recyclerView.paddingRight > 0 || recyclerView.paddingTop > 0)
 
     private fun waitForLayoutAndRetry(visibleHeaders: Map<Int, View>) {
         currentHeader?.viewTreeObserver?.addOnGlobalLayoutListener(

@@ -6,31 +6,31 @@ import java.util.ArrayList
 /**
  * Responsible for updating the handle / bubble position when user scrolls the [android.support.v7.widget.RecyclerView].
  */
-class RecyclerViewScrollListener(private val scroller: FastScroller) : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+class RecyclerViewScrollListener(private val scroller: FastScroller) : RecyclerView.OnScrollListener() {
     private val listeners = ArrayList<ScrollerListener>()
-    private var oldScrollState = androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
+    private var oldScrollState = RecyclerView.SCROLL_STATE_IDLE
 
     fun addScrollerListener(listener: ScrollerListener) {
         listeners.add(listener)
     }
 
-    override fun onScrollStateChanged(recyclerView: androidx.recyclerview.widget.RecyclerView, newScrollState: Int) {
+    override fun onScrollStateChanged(recyclerView: RecyclerView, newScrollState: Int) {
         super.onScrollStateChanged(recyclerView, newScrollState)
-        if (newScrollState == androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE && oldScrollState != androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE) {
+        if (newScrollState == RecyclerView.SCROLL_STATE_IDLE && oldScrollState != RecyclerView.SCROLL_STATE_IDLE) {
             scroller.viewProvider?.onScrollFinished()
-        } else if (newScrollState != androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE && oldScrollState == androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE) {
+        } else if (newScrollState != RecyclerView.SCROLL_STATE_IDLE && oldScrollState == RecyclerView.SCROLL_STATE_IDLE) {
             scroller.viewProvider?.onScrollStarted()
         }
         oldScrollState = newScrollState
     }
 
-    override fun onScrolled(rv: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
+    override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
         if (scroller.shouldUpdateHandlePosition()) {
             updateHandlePosition(rv)
         }
     }
 
-    fun updateHandlePosition(rv: androidx.recyclerview.widget.RecyclerView) {
+    fun updateHandlePosition(rv: RecyclerView) {
         val relativePos: Float = if (scroller.isVertical) {
             val offset = rv.computeVerticalScrollOffset()
             val extent = rv.computeVerticalScrollExtent()

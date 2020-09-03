@@ -17,9 +17,10 @@ import com.zeyad.gadapter.R
 import com.zeyad.gadapter.fastscroll.viewprovider.DefaultScrollerViewProvider
 import com.zeyad.gadapter.fastscroll.viewprovider.ScrollerViewProvider
 
-class FastScroller @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : LinearLayout(context, attrs, defStyle) {
+class FastScroller @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0)
+    : LinearLayout(context, attrs, defStyle) {
     private val scrollListener = RecyclerViewScrollListener(this)
-    private lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
+    private lateinit var recyclerView: RecyclerView
 
     private lateinit var bubble: View
     private lateinit var handle: View
@@ -90,7 +91,7 @@ class FastScroller @JvmOverloads constructor(context: Context, attrs: AttributeS
      *
      * @param recyclerView A [RecyclerView] to attach the [FastScroller] to.
      */
-    fun setRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
+    fun setRecyclerView(recyclerView: RecyclerView) {
         this.recyclerView = recyclerView
         val adapter = recyclerView.adapter
         if (adapter is GenericRecyclerViewAdapter)
@@ -275,9 +276,7 @@ class FastScroller @JvmOverloads constructor(context: Context, attrs: AttributeS
         }
     }
 
-    internal fun shouldUpdateHandlePosition(): Boolean {
-        return !manuallyChangingPosition && recyclerView.childCount > 0
-    }
+    internal fun shouldUpdateHandlePosition(): Boolean = !manuallyChangingPosition && recyclerView.childCount > 0
 
     companion object {
 

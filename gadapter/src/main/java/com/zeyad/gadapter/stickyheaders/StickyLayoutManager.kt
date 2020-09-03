@@ -3,12 +3,14 @@ package com.zeyad.gadapter.stickyheaders
 import android.content.Context
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.zeyad.gadapter.GenericAdapter.Companion.SECTION_HEADER
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderHandler
 import com.zeyad.gadapter.stickyheaders.exposed.StickyHeaderListener
 import java.util.LinkedHashMap
 
-open class StickyLayoutManager(context: Context, orientation: Int, reverseLayout: Boolean, headerHandler: StickyHeaderHandler) : androidx.recyclerview.widget.LinearLayoutManager(context, orientation, reverseLayout) {
+open class StickyLayoutManager(context: Context, orientation: Int, reverseLayout: Boolean, headerHandler: StickyHeaderHandler)
+    : LinearLayoutManager(context, orientation, reverseLayout) {
 
     private var positioner: StickyHeaderPositioner? = null
     private var headerHandler: StickyHeaderHandler? = null
@@ -31,7 +33,7 @@ open class StickyLayoutManager(context: Context, orientation: Int, reverseLayout
             return visibleHeaders
         }
 
-    constructor(context: Context, headerHandler: StickyHeaderHandler) : this(context, androidx.recyclerview.widget.LinearLayoutManager.VERTICAL, false, headerHandler) {
+    constructor(context: Context, headerHandler: StickyHeaderHandler) : this(context, VERTICAL, false, headerHandler) {
         init(headerHandler)
     }
 
@@ -78,7 +80,7 @@ open class StickyLayoutManager(context: Context, orientation: Int, reverseLayout
         headerPositions.clear()
     }
 
-    override fun onLayoutChildren(recycler: androidx.recyclerview.widget.RecyclerView.Recycler?, state: androidx.recyclerview.widget.RecyclerView.State) {
+    override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State) {
         super.onLayoutChildren(recycler, state)
         cacheHeaderPositions()
         positioner?.reset(orientation, findFirstVisibleItemPosition())
@@ -86,7 +88,7 @@ open class StickyLayoutManager(context: Context, orientation: Int, reverseLayout
                 findFirstVisibleItemPosition(), visibleHeaders, viewRetriever!!)
     }
 
-    override fun scrollHorizontallyBy(dx: Int, recycler: androidx.recyclerview.widget.RecyclerView.Recycler?, state: androidx.recyclerview.widget.RecyclerView.State?): Int {
+    override fun scrollHorizontallyBy(dx: Int, recycler: RecyclerView.Recycler?, state: RecyclerView.State?): Int {
         val scroll = super.scrollHorizontallyBy(dx, recycler, state)
         if (Math.abs(scroll) > 0) {
             positioner?.updateHeaderState(
@@ -95,7 +97,7 @@ open class StickyLayoutManager(context: Context, orientation: Int, reverseLayout
         return scroll
     }
 
-    override fun scrollVerticallyBy(dy: Int, recycler: androidx.recyclerview.widget.RecyclerView.Recycler?, state: androidx.recyclerview.widget.RecyclerView.State?): Int {
+    override fun scrollVerticallyBy(dy: Int, recycler: RecyclerView.Recycler?, state: RecyclerView.State?): Int {
         val scroll = super.scrollVerticallyBy(dy, recycler, state)
         if (Math.abs(scroll) > 0) {
             positioner?.updateHeaderState(
@@ -129,7 +131,7 @@ open class StickyLayoutManager(context: Context, orientation: Int, reverseLayout
         positioner?.setListener(listener)
     }
 
-    override fun onAttachedToWindow(view: androidx.recyclerview.widget.RecyclerView?) {
+    override fun onAttachedToWindow(view: RecyclerView?) {
         super.onAttachedToWindow(view)
         Preconditions.validateParentView(view!!)
         viewRetriever = ViewRetriever.RecyclerViewRetriever(view)
@@ -138,7 +140,7 @@ open class StickyLayoutManager(context: Context, orientation: Int, reverseLayout
         positioner?.setListener(listener)
     }
 
-    override fun removeAndRecycleAllViews(recycler: androidx.recyclerview.widget.RecyclerView.Recycler) {
+    override fun removeAndRecycleAllViews(recycler: RecyclerView.Recycler) {
         super.removeAndRecycleAllViews(recycler)
         positioner?.clearHeader()
     }

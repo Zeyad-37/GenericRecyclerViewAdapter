@@ -1,17 +1,21 @@
 package com.zeyad.gadapter
 
 import android.util.Log
+import androidx.recyclerview.widget.RecyclerView
 
-abstract class EndlessScrollListener : androidx.recyclerview.widget.RecyclerView.OnScrollListener {
+abstract class EndlessScrollListener : RecyclerView.OnScrollListener {
     // The minimum amount of items to have below your current scroll position
     // before loading more.
     //set visibleThreshold   default: 5
     var visibleThreshold = 5
         private set
+
     // The current offset index of data you have loaded
     private var currentPage = 0
+
     // The total number of items in the dataset after the last load
     private var previousTotalItemCount = 0
+
     // True if we are still waiting for the last set of data to load.
     private var loading = true
     // Sets the starting page index
@@ -21,7 +25,7 @@ abstract class EndlessScrollListener : androidx.recyclerview.widget.RecyclerView
     // Sets the  footerViewType
     private val defaultNoFooterViewType = -1
     private var footerViewType = -1
-    private var mLayoutManager: androidx.recyclerview.widget.RecyclerView.LayoutManager? = null
+    private var mLayoutManager: RecyclerView.LayoutManager? = null
 
     private val isUseFooterView: Boolean
         get() = footerViewType != defaultNoFooterViewType
@@ -71,7 +75,7 @@ abstract class EndlessScrollListener : androidx.recyclerview.widget.RecyclerView
     // This happens many times a second during a scroll, so be wary of the code you place here.
     // We are given a few useful parameters to help us work out if we need to load some more data,
     // but first we check if we are waiting for the previous load to finish.
-    override fun onScrolled(view: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
+    override fun onScrolled(view: RecyclerView, dx: Int, dy: Int) {
         // when dy=0---->list is clear totalItemCount == 0 or init load  previousTotalItemCount=0
         if (dy <= 0) return
         //        Log.i(TAG, "onScrolled-------dy:" + dy);
@@ -108,7 +112,7 @@ abstract class EndlessScrollListener : androidx.recyclerview.widget.RecyclerView
         }
     }
 
-    fun isFooterView(padapter: androidx.recyclerview.widget.RecyclerView.Adapter<*>): Boolean {
+    fun isFooterView(padapter: RecyclerView.Adapter<*>): Boolean {
         var isFooterView = false
         val ptotalItemCount = padapter.itemCount
         if (ptotalItemCount > 0) {
