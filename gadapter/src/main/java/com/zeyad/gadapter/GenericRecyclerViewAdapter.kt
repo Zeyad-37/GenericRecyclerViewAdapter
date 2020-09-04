@@ -40,8 +40,11 @@ abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList())
     val itemSwipeObservable: ItemSwipeObservable
         get() = genericAdapter.itemSwipeObservable
 
-    val isSelectionAllowed: Boolean
-        get() = genericAdapter.isSelectionAllowed
+    val areItemsSelectable: Boolean
+        get() = genericAdapter.areItemsSelectable
+
+    val areItemsExpandable: Boolean
+        get() = genericAdapter.areItemsExpandable
 
     val dataList: List<ItemInfo<*>>
         get() = genericAdapter.adapterData
@@ -65,33 +68,18 @@ abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList())
 
     abstract override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder<*>
 
-    override fun onBindViewHolder(holder: GenericViewHolder<*>, position: Int) {
-        genericAdapter.onBindViewHolder(holder as GenericViewHolder<Any>, position)
-    }
+    override fun onBindViewHolder(holder: GenericViewHolder<*>, position: Int) =
+            genericAdapter.onBindViewHolder(holder as GenericViewHolder<Any>, position)
 
-    override fun getItemViewType(position: Int): Int {
-        return genericAdapter.getItemViewType(position)
-    }
+    override fun getItemViewType(position: Int): Int = genericAdapter.getItemViewType(position)
 
-    override fun getItemId(position: Int): Long {
-        return genericAdapter.getItemId(position)
-    }
+    override fun getItemId(position: Int): Long = genericAdapter.getItemId(position)
 
-    override fun getItemCount(): Int {
-        return genericAdapter.adapterData.size
-    }
+    override fun getItemCount(): Int = genericAdapter.adapterData.size
 
-    override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
-        return genericAdapter.onItemMove(fromPosition, toPosition)
-    }
+    override fun onItemDismiss(position: Int) = genericAdapter.onItemDismiss(position)
 
-    override fun onItemDismiss(position: Int) {
-        genericAdapter.onItemDismiss(position)
-    }
-
-    fun getItem(index: Int): ItemInfo<*> {
-        return genericAdapter.getItem(index)
-    }
+    fun getItem(index: Int): ItemInfo<*> = genericAdapter.getItem(index)
 
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener) {
         genericAdapter.onItemClickListener = onItemClickListener
@@ -105,58 +93,38 @@ abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList())
         genericAdapter.onSwipeListener = onSwipeListener
     }
 
-    fun hasItemById(itemId: Long): Boolean {
-        return genericAdapter.hasItemById(itemId)
-    }
+    fun hasItemById(itemId: Long): Boolean = genericAdapter.hasItemById(itemId)
 
-    fun getItemIndexById(itemId: Long): Int {
-        return genericAdapter.getItemIndexById(itemId)
-    }
+    fun getItemIndexById(itemId: Long): Int = genericAdapter.getItemIndexById(itemId)
 
     @Throws(IllegalAccessException::class)
-    fun getItemById(itemId: Long): ItemInfo<*> {
-        return genericAdapter.getItemById(itemId)
-    }
+    fun getItemById(itemId: Long): ItemInfo<*> = genericAdapter.getItemById(itemId)
 
-    fun disableViewHolder(index: Int) {
-        genericAdapter.disableViewHolder(index)
-    }
+    fun disableViewHolder(index: Int) = genericAdapter.disableViewHolder(index)
 
-    fun enableViewHolder(index: Int) {
-        genericAdapter.enableViewHolder(index)
-    }
+    fun enableViewHolder(index: Int) = genericAdapter.enableViewHolder(index)
 
     fun setAllowSelection(allowSelection: Boolean) {
-        genericAdapter.isSelectionAllowed = allowSelection
+        genericAdapter.areItemsSelectable = allowSelection
     }
 
-    fun areItemsClickable(): Boolean {
-        return genericAdapter.areItemsClickable
-    }
+    fun areItemsClickable(): Boolean = genericAdapter.areItemsClickable
 
     fun setAreItemsClickable(areItemsClickable: Boolean) {
         genericAdapter.areItemsClickable = areItemsClickable
     }
 
-    fun areItemsExpandable(): Boolean {
-        return genericAdapter.areItemsExpandable
-    }
+    fun areItemsExpandable(): Boolean = genericAdapter.areItemsExpandable
 
     fun setAreItemsExpandable(areItemsExpandable: Boolean) {
         genericAdapter.areItemsExpandable = areItemsExpandable
     }
 
-    fun isSectionHeader(index: Int): Boolean {
-        return genericAdapter.isSectionHeader(index)
-    }
+    fun isSectionHeader(index: Int): Boolean = genericAdapter.isSectionHeader(index)
 
-    fun isSelected(position: Int): Boolean {
-        return genericAdapter.isSelected(position)
-    }
+    fun isSelected(position: Int): Boolean = genericAdapter.isSelected(position)
 
-    fun toggleSelection(position: Int): Boolean {
-        return genericAdapter.toggleSelection(position)
-    }
+    fun toggleSelection(position: Int): Boolean = genericAdapter.toggleSelection(position)
 
     fun selectItem(position: Int) {
         genericAdapter.selectItem(position)
@@ -175,14 +143,7 @@ abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList())
     }
 
     @Deprecated("")
-    private fun removeItem(position: Int): ItemInfo<*> {
-        return genericAdapter.removeItem(position)
-    }
-
-    @Deprecated("")
-    private fun moveItem(fromPosition: Int, toPosition: Int) {
-        genericAdapter.moveItem(fromPosition, toPosition)
-    }
+    private fun removeItem(position: Int): ItemInfo<*> = genericAdapter.removeItem(position)
 
     private fun validateList(dataList: List<ItemInfo<*>>?) {
         requireNotNull(dataList) { "The list cannot be null" }
@@ -197,7 +158,6 @@ abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList())
             notifyDataSetChanged()
     }
 
-    fun setDataFlowable(dataFlowable: Flowable<List<ItemInfo<*>>>): Disposable {
-        return dataFlowable.subscribe({ dataSet -> setDataList(dataSet, null) }, { throwable -> throwable.printStackTrace() })
-    }
+    fun setDataFlowable(dataFlowable: Flowable<List<ItemInfo<*>>>): Disposable =
+            dataFlowable.subscribe({ dataSet -> setDataList(dataSet, null) }, { throwable -> throwable.printStackTrace() })
 }

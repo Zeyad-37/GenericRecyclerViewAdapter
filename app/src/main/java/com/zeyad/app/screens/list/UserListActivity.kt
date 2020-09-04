@@ -152,7 +152,7 @@ class UserListActivity : BaseActivity<UserListState, UserListEffect, UserListVM>
 //        })
         usersAdapter.setOnItemLongClickListener(object : OnItemLongClickListener {
             override fun onItemLongClicked(position: Int, itemInfo: ItemInfo<*>, holder: GenericViewHolder<*>): Boolean {
-                if (usersAdapter.isSelectionAllowed) {
+                if (usersAdapter.areItemsSelectable) {
                     actionMode = startSupportActionMode(this@UserListActivity)
                     toggleItemSelection(position)
                 }

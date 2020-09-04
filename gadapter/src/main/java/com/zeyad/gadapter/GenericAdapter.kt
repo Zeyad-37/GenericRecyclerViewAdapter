@@ -7,9 +7,9 @@ import com.zeyad.gadapter.fastscroll.SectionTitleProvider
 import com.zeyad.gadapter.observables.ItemClickObservable
 import com.zeyad.gadapter.observables.ItemLongClickObservable
 import com.zeyad.gadapter.observables.ItemSwipeObservable
-import java.util.Collections
 
 class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
+
     private val selectedItems: SparseBooleanArray = SparseBooleanArray()
     private val dataList: MutableList<ItemInfo<*>> = mutableListOf()
     private val expandedPositions: MutableList<Int> = mutableListOf()
@@ -17,7 +17,7 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
     var onItemLongClickListener: OnItemLongClickListener? = null
     var onSwipeListener: OnSwipeListener? = null
     var sectionTitleProvider: SectionTitleProvider? = null
-    var isSelectionAllowed: Boolean = false
+    var areItemsSelectable: Boolean = false
     var areItemsExpandable: Boolean = false
     var areItemsClickable: Boolean = false
 
@@ -34,7 +34,7 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
         get() = ItemSwipeObservable(this)
 
     val selectedItemCount: Int
-        get() = if (isSelectionAllowed) {
+        get() = if (areItemsSelectable) {
             selectedItems.size()
         } else {
             throw IllegalStateException(SELECTION_DISABLED)
@@ -42,7 +42,7 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
 
     val selectedItemsIndices: List<Int>
         get() {
-            if (isSelectionAllowed) {
+            if (areItemsSelectable) {
                 val items = ArrayList<Int>(selectedItems.size())
                 for (i in 0 until selectedItems.size()) {
                     items.add(selectedItems.keyAt(i))
@@ -110,11 +110,6 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
 
     fun getItemId(position: Int): Long = dataList[position].id
 
-    fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
-        moveItem(fromPosition, toPosition)
-        return false
-    }
-
     fun onItemDismiss(position: Int) {
         if (onSwipeListener != null)
             onSwipeListener?.onItemSwipe(getItem(position))
@@ -127,7 +122,7 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
             dataList[index].id == SECTION_HEADER.toLong() || dataList[index].layoutId == SECTION_HEADER
 
     fun isSelected(position: Int): Boolean {
-        return if (isSelectionAllowed) {
+        return if (areItemsSelectable) {
             selectedItemsIndices.contains(position)
         } else {
             throw IllegalStateException(SELECTION_DISABLED)
@@ -135,7 +130,7 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
     }
 
     fun toggleSelection(position: Int): Boolean {
-        if (isSelectionAllowed) {
+        if (areItemsSelectable) {
             val isSelected = if (selectedItems.get(position, false)) {
                 selectedItems.delete(position)
                 false
@@ -151,7 +146,7 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
     }
 
     fun selectItem(position: Int) {
-        if (isSelectionAllowed) {
+        if (areItemsSelectable) {
             selectedItems.put(position, true)
             adapter.notifyItemChanged(position)
         } else {
@@ -160,7 +155,7 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
     }
 
     fun unSelectItem(position: Int) {
-        if (isSelectionAllowed) {
+        if (areItemsSelectable) {
             selectedItems.delete(position)
         } else {
             throw IllegalStateException(SELECTION_DISABLED)
@@ -168,7 +163,7 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
     }
 
     fun clearSelection() {
-        if (isSelectionAllowed) {
+        if (areItemsSelectable) {
             val selection = selectedItemsIndices
             selectedItems.clear()
             for (i in selection) {
@@ -180,7 +175,7 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
     }
 
     fun getSelectedItems(): List<ItemInfo<*>> {
-        if (isSelectionAllowed) {
+        if (areItemsSelectable) {
             val items = ArrayList<ItemInfo<*>>(selectedItems.size())
             for (i in 0 until selectedItems.size()) {
                 items.add(dataList[selectedItems.keyAt(i)])
@@ -204,11 +199,6 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
         val itemInfo = dataList.removeAt(position)
         adapter.notifyItemRemoved(position)
         return itemInfo
-    }
-
-    fun moveItem(fromPosition: Int, toPosition: Int) {
-        Collections.swap(dataList, fromPosition, toPosition)
-        adapter.notifyItemMoved(fromPosition, toPosition)
     }
 
     fun setData(dataList: List<ItemInfo<*>>) {

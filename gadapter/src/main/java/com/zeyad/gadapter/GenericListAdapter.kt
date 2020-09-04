@@ -23,6 +23,12 @@ abstract class GenericListAdapter : ListAdapter<ItemInfo<*>, GenericViewHolder<*
             genericAdapter.sectionTitleProvider = sectionTitleProvider
         }
 
+    val firstItem: ItemInfo<*>
+        get() = genericAdapter.getItem(0)
+
+    val lastItem: ItemInfo<*>
+        get() = genericAdapter.getItem(genericAdapter.adapterData.size - 1)
+
     val itemClickObservable: ItemClickObservable
         get() = genericAdapter.itemClickObservable
 
@@ -31,6 +37,12 @@ abstract class GenericListAdapter : ListAdapter<ItemInfo<*>, GenericViewHolder<*
 
     val itemSwipeObservable: ItemSwipeObservable
         get() = genericAdapter.itemSwipeObservable
+
+    val areItemsSelectable: Boolean
+        get() = genericAdapter.areItemsSelectable
+
+    val areItemsExpandable: Boolean
+        get() = genericAdapter.areItemsExpandable
 
     val dataList: List<ItemInfo<*>>
         get() = genericAdapter.adapterData
@@ -58,29 +70,16 @@ abstract class GenericListAdapter : ListAdapter<ItemInfo<*>, GenericViewHolder<*
 
     abstract override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GenericViewHolder<*>
 
-    override fun onBindViewHolder(holder: GenericViewHolder<*>, position: Int) {
-        genericAdapter.onBindViewHolder(holder as GenericViewHolder<Any>, position)
-    }
+    override fun onBindViewHolder(holder: GenericViewHolder<*>, position: Int) =
+            genericAdapter.onBindViewHolder(holder as GenericViewHolder<Any>, position)
 
-    override fun getItemViewType(position: Int): Int {
-        return genericAdapter.getItemViewType(position)
-    }
+    override fun getItemViewType(position: Int): Int = genericAdapter.getItemViewType(position)
 
-    override fun getItemId(position: Int): Long {
-        return genericAdapter.getItemId(position)
-    }
+    override fun getItemId(position: Int): Long = genericAdapter.getItemId(position)
 
-    override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
-        return genericAdapter.onItemMove(fromPosition, toPosition)
-    }
+    override fun onItemDismiss(position: Int) = genericAdapter.onItemDismiss(position)
 
-    override fun onItemDismiss(position: Int) {
-        genericAdapter.onItemDismiss(position)
-    }
-
-    fun isSectionHeader(index: Int): Boolean {
-        return genericAdapter.isSectionHeader(index)
-    }
+    fun isSectionHeader(index: Int): Boolean = genericAdapter.isSectionHeader(index)
 
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener) {
         genericAdapter.onItemClickListener = onItemClickListener
@@ -94,29 +93,21 @@ abstract class GenericListAdapter : ListAdapter<ItemInfo<*>, GenericViewHolder<*
         genericAdapter.onSwipeListener = onSwipeListener
     }
 
-    fun areItemsClickable(): Boolean {
-        return genericAdapter.areItemsClickable
-    }
+    fun areItemsClickable(): Boolean = genericAdapter.areItemsClickable
 
     fun setAreItemsClickable(areItemsClickable: Boolean) {
         genericAdapter.areItemsClickable = areItemsClickable
     }
 
-    fun areItemsExpandable(): Boolean {
-        return genericAdapter.areItemsExpandable
-    }
+    fun areItemsExpandable(): Boolean = genericAdapter.areItemsExpandable
 
     fun setAreItemsExpandable(areItemsExpandable: Boolean) {
         genericAdapter.areItemsExpandable = areItemsExpandable
     }
 
-    fun isSelected(position: Int): Boolean {
-        return genericAdapter.isSelected(position)
-    }
+    fun isSelected(position: Int): Boolean = genericAdapter.isSelected(position)
 
-    fun toggleSelection(position: Int): Boolean {
-        return genericAdapter.toggleSelection(position)
-    }
+    fun toggleSelection(position: Int): Boolean = genericAdapter.toggleSelection(position)
 
     fun selectItem(position: Int) {
         genericAdapter.selectItem(position)
@@ -135,12 +126,5 @@ abstract class GenericListAdapter : ListAdapter<ItemInfo<*>, GenericViewHolder<*
     }
 
     @Deprecated("")
-    private fun removeItem(position: Int): ItemInfo<*> {
-        return genericAdapter.removeItem(position)
-    }
-
-    @Deprecated("")
-    private fun moveItem(fromPosition: Int, toPosition: Int) {
-        genericAdapter.moveItem(fromPosition, toPosition)
-    }
+    private fun removeItem(position: Int): ItemInfo<*> = genericAdapter.removeItem(position)
 }
