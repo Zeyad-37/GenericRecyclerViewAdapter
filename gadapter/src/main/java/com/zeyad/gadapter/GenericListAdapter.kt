@@ -77,6 +77,9 @@ abstract class GenericListAdapter : ListAdapter<ItemInfo<*>, GenericViewHolder<*
 
     override fun getItemId(position: Int): Long = genericAdapter.getItemId(position)
 
+    override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean =
+            genericAdapter.onItemMove(fromPosition, toPosition)
+
     override fun onItemDismiss(position: Int) = genericAdapter.onItemDismiss(position)
 
     fun isSectionHeader(index: Int): Boolean = genericAdapter.isSectionHeader(index)
@@ -109,21 +112,13 @@ abstract class GenericListAdapter : ListAdapter<ItemInfo<*>, GenericViewHolder<*
 
     fun toggleSelection(position: Int): Boolean = genericAdapter.toggleSelection(position)
 
-    fun selectItem(position: Int) {
-        genericAdapter.selectItem(position)
-    }
+    fun selectItem(position: Int) = genericAdapter.selectItem(position)
 
-    fun unSelectItem(position: Int) {
-        genericAdapter.unSelectItem(position)
-    }
+    fun unSelectItem(position: Int) = genericAdapter.unSelectItem(position)
 
-    fun clearSelection() {
-        genericAdapter.clearSelection()
-    }
+    fun clearSelection() = genericAdapter.clearSelection()
 
-    fun getSelectedItemsBundle(): List<*> {
-        return genericAdapter.getSelectedItemsBundle()
-    }
+    fun getSelectedItemsBundle(): List<*> = genericAdapter.getSelectedItemsBundle()
 
     @Deprecated("")
     private fun removeItem(position: Int): ItemInfo<*> = genericAdapter.removeItem(position)

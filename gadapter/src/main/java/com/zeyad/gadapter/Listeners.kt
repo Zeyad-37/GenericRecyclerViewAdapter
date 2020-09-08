@@ -25,7 +25,7 @@ interface OnStartDragListener {
      *
      * @param viewHolder The holder of the view to drag.
      */
-    fun onStartDrag(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder)
+    fun onStartDrag(viewHolder: RecyclerView.ViewHolder)
 }
 
 interface ItemTouchHelperViewHolder {

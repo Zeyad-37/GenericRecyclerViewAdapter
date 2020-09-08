@@ -7,19 +7,20 @@ import com.zeyad.gadapter.fastscroll.SectionTitleProvider
 import com.zeyad.gadapter.observables.ItemClickObservable
 import com.zeyad.gadapter.observables.ItemLongClickObservable
 import com.zeyad.gadapter.observables.ItemSwipeObservable
+import java.util.Collections
 
 class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
 
     private val selectedItems: SparseBooleanArray = SparseBooleanArray()
-    private val dataList: MutableList<ItemInfo<*>> = mutableListOf()
     private val expandedPositions: MutableList<Int> = mutableListOf()
+    private val dataList: MutableList<ItemInfo<*>> = mutableListOf()
     var onItemClickListener: OnItemClickListener? = null
     var onItemLongClickListener: OnItemLongClickListener? = null
     var onSwipeListener: OnSwipeListener? = null
     var sectionTitleProvider: SectionTitleProvider? = null
     var areItemsSelectable: Boolean = false
     var areItemsExpandable: Boolean = false
-    var areItemsClickable: Boolean = false
+    var areItemsClickable: Boolean = true
 
     val adapterData: List<ItemInfo<*>>
         get() = dataList
@@ -63,12 +64,6 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
             return ids
         }
 
-    init {
-        this.isSelectionAllowed = false
-        this.areItemsExpandable = false
-        this.areItemsClickable = true
-    }
-
     constructor(dataList: List<ItemInfo<*>>, adapter: RecyclerView.Adapter<*>) : this(adapter) {
         setData(dataList)
     }
@@ -109,6 +104,11 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
     fun getItemViewType(position: Int): Int = dataList[position].layoutId
 
     fun getItemId(position: Int): Long = dataList[position].id
+
+    fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
+        moveItem(fromPosition, toPosition)
+        return false
+    }
 
     fun onItemDismiss(position: Int) {
         if (onSwipeListener != null)
@@ -199,6 +199,11 @@ class GenericAdapter(private val adapter: RecyclerView.Adapter<*>) {
         val itemInfo = dataList.removeAt(position)
         adapter.notifyItemRemoved(position)
         return itemInfo
+    }
+
+    fun moveItem(fromPosition: Int, toPosition: Int) {
+        Collections.swap(dataList, fromPosition, toPosition)
+        adapter.notifyItemMoved(fromPosition, toPosition)
     }
 
     fun setData(dataList: List<ItemInfo<*>>) {

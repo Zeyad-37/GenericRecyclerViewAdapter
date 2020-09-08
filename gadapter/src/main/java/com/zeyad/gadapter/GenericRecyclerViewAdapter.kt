@@ -77,6 +77,9 @@ abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList())
 
     override fun getItemCount(): Int = genericAdapter.adapterData.size
 
+    override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean =
+            genericAdapter.onItemMove(fromPosition, toPosition)
+
     override fun onItemDismiss(position: Int) = genericAdapter.onItemDismiss(position)
 
     fun getItem(index: Int): ItemInfo<*> = genericAdapter.getItem(index)
@@ -126,21 +129,13 @@ abstract class GenericRecyclerViewAdapter(list: List<ItemInfo<*>> = emptyList())
 
     fun toggleSelection(position: Int): Boolean = genericAdapter.toggleSelection(position)
 
-    fun selectItem(position: Int) {
-        genericAdapter.selectItem(position)
-    }
+    fun selectItem(position: Int) = genericAdapter.selectItem(position)
 
-    fun unSelectItem(position: Int) {
-        genericAdapter.unSelectItem(position)
-    }
+    fun unSelectItem(position: Int) = genericAdapter.unSelectItem(position)
 
-    fun clearSelection() {
-        genericAdapter.clearSelection()
-    }
+    fun clearSelection() = genericAdapter.clearSelection()
 
-    fun getSelectedItemsBundle(): List<*> {
-        return genericAdapter.getSelectedItemsBundle()
-    }
+    fun getSelectedItemsBundle(): List<*> = genericAdapter.getSelectedItemsBundle()
 
     @Deprecated("")
     private fun removeItem(position: Int): ItemInfo<*> = genericAdapter.removeItem(position)
